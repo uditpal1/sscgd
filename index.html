@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>SSC GD Question Bank</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 20px;
+    color: #222;
+  }
+  h1 { text-align: center; color: #1a5490; margin-bottom: 5px; }
+  .subtitle { text-align: center; color: #666; margin-bottom: 25px; font-size: 14px; }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+  select, button {
+    padding: 10px 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    cursor: pointer;
+    background: #fff;
+  }
+  button.primary {
+    background: #1a5490;
+    color: #fff;
+    border: none;
+    font-weight: bold;
+  }
+  button.primary:hover { background: #12406e; }
+
+  .stats {
+    text-align: center;
+    color: #444;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+
+  .question-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border-left: 4px solid #1a5490;
+  }
+  .q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 13px;
+    color: #666;
+  }
+  .q-tag {
+    background: #1a5490;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .subject-tag {
+    background: #e8f0fb;
+    color: #1a5490;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 12px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    resize: vertical;
+    background: #fafbfc;
+  }
+  .copy-btn {
+    margin-top: 8px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+  }
+  .copy-btn:hover { background: #1f8437; }
+  .copy-btn.copied { background: #6c757d; }
+
+  @media (max-width: 600px) {
+    .q-header { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<h1>📚 SSC GD Question Bank</h1>
+<p class="subtitle">Bilingual (Hindi + English) • Copy-ready Text Boxes</p>
+
+<div class="controls">
+  <select id="subjectFilter">
+    <option value="all">All Subjects</option>
+    <option value="reasoning">Reasoning</option>
+    <option value="gk">General Knowledge</option>
+    <option value="math">Mathematics</option>
+    <option value="english">English/Hindi</option>
+  </select>
+  <select id="dayFilter">
+    <option value="all">All Days</option>
+  </select>
+  <button class="primary" onclick="copyAll()">📋 Copy All Visible</button>
+  <button onclick="downloadJSON()">💾 Download as JSON</button>
+</div>
+
+<div class="stats" id="stats"></div>
+<div id="questionsContainer"></div>
+
+<script>
+/* ============================================================
+   QUESTION DATA
+   ------------------------------------------------------------
+   Har question ka format:
+   {
+     day: 1,
+     subject: "reasoning" | "gk" | "math" | "english",
+     qno: 1,
+     hindi: "प्रश्न हिंदी में",
+     english: "Question in English",
+     options: [
+       { hi: "विकल्प", en: "Option", correct: true/false },
+       ...
+     ]
+   }
+   ============================================================ */
+
+const questions = [
+
+  /* ---------- DAY 1 - REASONING ---------- */
+  {
+    day: 1, subject: "reasoning", qno: 1,
+    hindi: "पुस्तक : अध्याय :: भवन : ?",
+    english: "Book : Chapter :: Building : ?",
+    options: [
+      { hi: "ईंट", en: "Brick", correct: false },
+      { hi: "फर्श", en: "Floor", correct: true },
+      { hi: "खिड़की", en: "Window", correct: false },
+      { hi: "छत", en: "Roof", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 2,
+    hindi: "3, 6, 11, 18, 27, ?",
+    english: "3, 6, 11, 18, 27, ?",
+    options: [
+      { hi: "36", en: "36", correct: false },
+      { hi: "38", en: "38", correct: true },
+      { hi: "40", en: "40", correct: false },
+      { hi: "42", en: "42", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 3,
+    hindi: "यदि CAT = 3120, तो DOG = ?",
+    english: "If CAT = 3120, then DOG = ?",
+    options: [
+      { hi: "4157", en: "4157", correct: true },
+      { hi: "4156", en: "4156", correct: false },
+      { hi: "4167", en: "4167", correct: false },
+      { hi: "4147", en: "4147", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 4,
+    hindi: "एक तस्वीर की ओर इशारा करते हुए रवि ने कहा, \"वह मेरी माँ के इकलौते बेटे की बेटी है।\" वह रवि से कैसे संबंधित है?",
+    english: "Pointing to a photo, Ravi said, \"She is the daughter of my mother's only son.\" How is she related to Ravi?",
+    options: [
+      { hi: "बहन", en: "Sister", correct: false },
+      { hi: "बेटी", en: "Daughter", correct: true },
+      { hi: "भतीजी", en: "Niece", correct: false },
+      { hi: "माँ", en: "Mother", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 5,
+    hindi: "एक व्यक्ति 5 किमी उत्तर की ओर चलता है, फिर दाएँ मुड़कर 3 किमी चलता है। अब वह किस दिशा में है?",
+    english: "A man walks 5 km north, then turns right and walks 3 km. Which direction is he facing now?",
+    options: [
+      { hi: "उत्तर", en: "North", correct: false },
+      { hi: "दक्षिण", en: "South", correct: false },
+      { hi: "पूर्व", en: "East", correct: true },
+      { hi: "पश्चिम", en: "West", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 6,
+    hindi: "विषम चुनें: 3, 5, 7, 9, 11",
+    english: "Find the odd one: 3, 5, 7, 9, 11",
+    options: [
+      { hi: "3", en: "3", correct: false },
+      { hi: "5", en: "5", correct: false },
+      { hi: "7", en: "7", correct: false },
+      { hi: "9", en: "9", correct: true }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 7,
+    hindi: "विषम चुनें: सेब, केला, गाजर, आम",
+    english: "Find the odd one: Apple, Banana, Carrot, Mango",
+    options: [
+      { hi: "सेब", en: "Apple", correct: false },
+      { hi: "केला", en: "Banana", correct: false },
+      { hi: "गाजर", en: "Carrot", correct: true },
+      { hi: "आम", en: "Mango", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 8,
+    hindi: "यदि 5 पेन की कीमत ₹40 है, तो 8 पेन की कीमत क्या होगी?",
+    english: "If 5 pens cost ₹40, what will 8 pens cost?",
+    options: [
+      { hi: "₹56", en: "₹56", correct: false },
+      { hi: "₹64", en: "₹64", correct: true },
+      { hi: "₹72", en: "₹72", correct: false },
+      { hi: "₹80", en: "₹80", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 9,
+    hindi: "एक कक्षा में रवि ऊपर से 7वें और नीचे से 12वें स्थान पर है। कक्षा में कुल कितने छात्र हैं?",
+    english: "In a class, Ravi is 7th from top and 12th from bottom. How many students are in the class?",
+    options: [
+      { hi: "17", en: "17", correct: false },
+      { hi: "18", en: "18", correct: true },
+      { hi: "19", en: "19", correct: false },
+      { hi: "20", en: "20", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "reasoning", qno: 10,
+    hindi: "अगली आकृति कौन सी होगी: वर्ग, वृत्त, त्रिभुज, वर्ग, वृत्त, ?",
+    english: "Which shape comes next: Square, Circle, Triangle, Square, Circle, ?",
+    options: [
+      { hi: "त्रिभुज", en: "Triangle", correct: true },
+      { hi: "वर्ग", en: "Square", correct: false },
+      { hi: "वृत्त", en: "Circle", correct: false },
+      { hi: "आयत", en: "Rectangle", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 1 - GK ---------- */
+  {
+    day: 1, subject: "gk", qno: 1,
+    hindi: "भारत के वर्तमान राष्ट्रपति कौन हैं?",
+    english: "Who is the current President of India?",
+    options: [
+      { hi: "रामनाथ कोविंद", en: "Ram Nath Kovind", correct: false },
+      { hi: "द्रौपदी मुर्मू", en: "Droupadi Murmu", correct: true },
+      { hi: "प्रणब मुखर्जी", en: "Pranab Mukherjee", correct: false },
+      { hi: "ए.पी.जे. अब्दुल कलाम", en: "A.P.J. Abdul Kalam", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 2,
+    hindi: "भारतीय संविधान का कौन सा अनुच्छेद मूल कर्तव्यों से संबंधित है?",
+    english: "Which article of the Indian Constitution deals with Fundamental Duties?",
+    options: [
+      { hi: "अनुच्छेद 51A", en: "Article 51A", correct: true },
+      { hi: "अनुच्छेद 32", en: "Article 32", correct: false },
+      { hi: "अनुच्छेद 21", en: "Article 21", correct: false },
+      { hi: "अनुच्छेद 14", en: "Article 14", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 3,
+    hindi: "कर्क रेखा भारत के कितने राज्यों से होकर गुजरती है?",
+    english: "Tropic of Cancer passes through how many Indian states?",
+    options: [
+      { hi: "6", en: "6", correct: false },
+      { hi: "7", en: "7", correct: false },
+      { hi: "8", en: "8", correct: true },
+      { hi: "9", en: "9", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 4,
+    hindi: "फीफा विश्व कप 2022 किस देश ने जीता?",
+    english: "Which country won the FIFA World Cup 2022?",
+    options: [
+      { hi: "फ्रांस", en: "France", correct: false },
+      { hi: "अर्जेंटीना", en: "Argentina", correct: true },
+      { hi: "ब्राज़ील", en: "Brazil", correct: false },
+      { hi: "जर्मनी", en: "Germany", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 5,
+    hindi: "ऑस्ट्रेलिया की राजधानी क्या है?",
+    english: "What is the capital of Australia?",
+    options: [
+      { hi: "सिडनी", en: "Sydney", correct: false },
+      { hi: "मेलबर्न", en: "Melbourne", correct: false },
+      { hi: "कैनबरा", en: "Canberra", correct: true },
+      { hi: "पर्थ", en: "Perth", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 6,
+    hindi: "भारत का राष्ट्रगान किसने लिखा?",
+    english: "Who wrote the National Anthem of India?",
+    options: [
+      { hi: "बंकिम चंद्र चटर्जी", en: "Bankim Chandra Chatterjee", correct: false },
+      { hi: "रवींद्रनाथ टैगोर", en: "Rabindranath Tagore", correct: true },
+      { hi: "शरत चंद्र", en: "Sarat Chandra", correct: false },
+      { hi: "प्रेमचंद", en: "Premchand", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 7,
+    hindi: "क्षेत्रफल के अनुसार भारत का सबसे बड़ा राज्य?",
+    english: "Largest state of India by area?",
+    options: [
+      { hi: "मध्य प्रदेश", en: "Madhya Pradesh", correct: false },
+      { hi: "महाराष्ट्र", en: "Maharashtra", correct: false },
+      { hi: "राजस्थान", en: "Rajasthan", correct: true },
+      { hi: "उत्तर प्रदेश", en: "Uttar Pradesh", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 8,
+    hindi: "भारतीय संविधान कब अपनाया गया?",
+    english: "When was the Indian Constitution adopted?",
+    options: [
+      { hi: "15 अगस्त 1947", en: "15 Aug 1947", correct: false },
+      { hi: "26 जनवरी 1950", en: "26 Jan 1950", correct: false },
+      { hi: "26 नवंबर 1949", en: "26 Nov 1949", correct: true },
+      { hi: "2 अक्टूबर 1950", en: "2 Oct 1950", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 9,
+    hindi: "भारत की सबसे लंबी नदी कौन सी है?",
+    english: "Which is the longest river in India?",
+    options: [
+      { hi: "यमुना", en: "Yamuna", correct: false },
+      { hi: "ब्रह्मपुत्र", en: "Brahmaputra", correct: false },
+      { hi: "गंगा", en: "Ganga", correct: true },
+      { hi: "गोदावरी", en: "Godavari", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "gk", qno: 10,
+    hindi: "भारतीय संविधान के जनक किसे कहा जाता है?",
+    english: "Who is known as the Father of the Indian Constitution?",
+    options: [
+      { hi: "महात्मा गांधी", en: "Mahatma Gandhi", correct: false },
+      { hi: "जवाहरलाल नेहरू", en: "Jawaharlal Nehru", correct: false },
+      { hi: "बी.आर. आंबेडकर", en: "B.R. Ambedkar", correct: true },
+      { hi: "सरदार पटेल", en: "Sardar Patel", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 1 - MATH ---------- */
+  {
+    day: 1, subject: "math", qno: 1,
+    hindi: "800 का 45% = ?",
+    english: "45% of 800 = ?",
+    options: [
+      { hi: "320", en: "320", correct: false },
+      { hi: "360", en: "360", correct: true },
+      { hi: "400", en: "400", correct: false },
+      { hi: "440", en: "440", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 2,
+    hindi: "₹5000 पर 10% वार्षिक दर से 2 वर्ष का साधारण ब्याज?",
+    english: "Simple Interest on ₹5000 at 10% per annum for 2 years?",
+    options: [
+      { hi: "₹500", en: "₹500", correct: false },
+      { hi: "₹1000", en: "₹1000", correct: true },
+      { hi: "₹1500", en: "₹1500", correct: false },
+      { hi: "₹2000", en: "₹2000", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 3,
+    hindi: "5 संख्याओं का औसत 27 है। एक संख्या हटाने पर औसत 25 हो जाता है। हटाई गई संख्या ज्ञात करें।",
+    english: "Average of 5 numbers is 27. If one number is excluded, average becomes 25. Find the excluded number.",
+    options: [
+      { hi: "30", en: "30", correct: false },
+      { hi: "35", en: "35", correct: true },
+      { hi: "40", en: "40", correct: false },
+      { hi: "45", en: "45", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 4,
+    hindi: "एक ट्रेन 4 घंटे में 360 किमी चलती है। उसकी गति क्या है?",
+    english: "A train covers 360 km in 4 hours. What is its speed?",
+    options: [
+      { hi: "80 किमी/घंटा", en: "80 km/h", correct: false },
+      { hi: "90 किमी/घंटा", en: "90 km/h", correct: true },
+      { hi: "100 किमी/घंटा", en: "100 km/h", correct: false },
+      { hi: "120 किमी/घंटा", en: "120 km/h", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 5,
+    hindi: "यदि 8 आदमी एक काम 12 दिनों में कर सकते हैं, तो 6 आदमी कितने दिनों में करेंगे?",
+    english: "If 8 men can do a work in 12 days, how many days will 6 men take?",
+    options: [
+      { hi: "14", en: "14", correct: false },
+      { hi: "16", en: "16", correct: true },
+      { hi: "18", en: "18", correct: false },
+      { hi: "20", en: "20", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 6,
+    hindi: "दो संख्याओं का अनुपात 3:4 है और उनका योग 84 है। संख्याएँ ज्ञात करें।",
+    english: "Ratio of two numbers is 3:4 and their sum is 84. Find the numbers.",
+    options: [
+      { hi: "36, 48", en: "36, 48", correct: true },
+      { hi: "30, 54", en: "30, 54", correct: false },
+      { hi: "24, 60", en: "24, 60", correct: false },
+      { hi: "42, 42", en: "42, 42", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 7,
+    hindi: "क्रय मूल्य = ₹200, विक्रय मूल्य = ₹250. लाभ % = ?",
+    english: "CP = ₹200, SP = ₹250. Profit % = ?",
+    options: [
+      { hi: "20%", en: "20%", correct: false },
+      { hi: "25%", en: "25%", correct: true },
+      { hi: "30%", en: "30%", correct: false },
+      { hi: "50%", en: "50%", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 8,
+    hindi: "7 सेमी त्रिज्या वाले वृत्त का क्षेत्रफल?",
+    english: "Area of circle with radius 7 cm?",
+    options: [
+      { hi: "144 सेमी²", en: "144 cm²", correct: false },
+      { hi: "154 सेमी²", en: "154 cm²", correct: true },
+      { hi: "164 सेमी²", en: "164 cm²", correct: false },
+      { hi: "174 सेमी²", en: "174 cm²", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 9,
+    hindi: "2/3 + 3/4 = ?",
+    english: "2/3 + 3/4 = ?",
+    options: [
+      { hi: "5/7", en: "5/7", correct: false },
+      { hi: "17/12", en: "17/12", correct: true },
+      { hi: "6/7", en: "6/7", correct: false },
+      { hi: "1 1/12", en: "1 1/12", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "math", qno: 10,
+    hindi: "₹1200 पर 15% छूट = ?",
+    english: "15% discount on ₹1200 = ?",
+    options: [
+      { hi: "₹1000", en: "₹1000", correct: false },
+      { hi: "₹1020", en: "₹1020", correct: true },
+      { hi: "₹1050", en: "₹1050", correct: false },
+      { hi: "₹1080", en: "₹1080", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 1 - ENGLISH ---------- */
+  {
+    day: 1, subject: "english", qno: 1,
+    hindi: "\"Abundant\" का पर्यायवाची?",
+    english: "Synonym of \"Abundant\"",
+    options: [
+      { hi: "अपर्याप्त / Scarce", en: "Scarce", correct: false },
+      { hi: "प्रचुर / Plenty", en: "Plenty", correct: true },
+      { hi: "थोड़ा / Little", en: "Little", correct: false },
+      { hi: "दुर्लभ / Rare", en: "Rare", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 2,
+    hindi: "\"Scarce\" का विलोम?",
+    english: "Antonym of \"Scarce\"",
+    options: [
+      { hi: "दुर्लभ / Rare", en: "Rare", correct: false },
+      { hi: "प्रचुर / Plenty", en: "Plenty", correct: true },
+      { hi: "सीमित / Limited", en: "Limited", correct: false },
+      { hi: "कम / Few", en: "Few", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 3,
+    hindi: "रिक्त स्थान भरें: He is good ___ mathematics.",
+    english: "Fill in: He is good ___ mathematics.",
+    options: [
+      { hi: "in", en: "in", correct: false },
+      { hi: "at", en: "at", correct: true },
+      { hi: "on", en: "on", correct: false },
+      { hi: "for", en: "for", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 4,
+    hindi: "एक शब्द: किताबों से प्यार करने वाला व्यक्ति",
+    english: "One-word: A person who loves books",
+    options: [
+      { hi: "ग्रंथप्रेमी / Bibliophile", en: "Bibliophile", correct: true },
+      { hi: "डाकटिकट संग्रहकर्ता / Philatelist", en: "Philatelist", correct: false },
+      { hi: "सिक्का संग्रहकर्ता / Numismatist", en: "Numismatist", correct: false },
+      { hi: "भाषाविद् / Linguist", en: "Linguist", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 5,
+    hindi: "सही वर्तनी चुनें",
+    english: "Correct spelling",
+    options: [
+      { hi: "Recieve", en: "Recieve", correct: false },
+      { hi: "Receive", en: "Receive", correct: true },
+      { hi: "Receeve", en: "Receeve", correct: false },
+      { hi: "Receve", en: "Receve", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 6,
+    hindi: "मुहावरा: \"Break the ice\" का अर्थ",
+    english: "Idiom: \"Break the ice\" means",
+    options: [
+      { hi: "कुछ तोड़ना / To break something", en: "To break something", correct: false },
+      { hi: "बातचीत शुरू करना / To start a conversation", en: "To start a conversation", correct: true },
+      { hi: "झगड़ा खत्म करना / To end a fight", en: "To end a fight", correct: false },
+      { hi: "ठंड लगना / To feel cold", en: "To feel cold", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 7,
+    hindi: "त्रुटि खोजें: She don't like coffee.",
+    english: "Find the error: She don't like coffee.",
+    options: [
+      { hi: "She", en: "She", correct: false },
+      { hi: "don't", en: "don't", correct: true },
+      { hi: "like", en: "like", correct: false },
+      { hi: "coffee", en: "coffee", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 8,
+    hindi: "रिक्त स्थान भरें: I have been living here ___ 2010.",
+    english: "Fill in: I have been living here ___ 2010.",
+    options: [
+      { hi: "for", en: "for", correct: false },
+      { hi: "since", en: "since", correct: true },
+      { hi: "from", en: "from", correct: false },
+      { hi: "by", en: "by", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 9,
+    hindi: "\"Ancient\" का विलोम?",
+    english: "Antonym of \"Ancient\"",
+    options: [
+      { hi: "पुराना / Old", en: "Old", correct: false },
+      { hi: "आधुनिक / Modern", en: "Modern", correct: true },
+      { hi: "अतीत / Past", en: "Past", correct: false },
+      { hi: "प्राचीन / Antique", en: "Antique", correct: false }
+    ]
+  },
+  {
+    day: 1, subject: "english", qno: 10,
+    hindi: "रिक्त स्थान भरें: He is ___ honest man.",
+    english: "Fill in: He is ___ honest man.",
+    options: [
+      { hi: "a", en: "a", correct: false },
+      { hi: "an", en: "an", correct: true },
+      { hi: "the", en: "the", correct: false },
+      { hi: "कोई नहीं / no article", en: "no article", correct: false }
+    ]
+  },
+    /* ============================================================
+     DAY 2
+     ============================================================ */
+
+  /* ---------- DAY 2 - REASONING ---------- */
+  {
+    day: 2, subject: "reasoning", qno: 1,
+    hindi: "अगली संख्या ज्ञात करें: 2, 6, 12, 20, 30, ?",
+    english: "Find next number: 2, 6, 12, 20, 30, ?",
+    options: [
+      { hi: "36", en: "36", correct: false },
+      { hi: "42", en: "42", correct: true },
+      { hi: "48", en: "48", correct: false },
+      { hi: "40", en: "40", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 2,
+    hindi: "यदि ROSE = 6821, तो SORE = ?",
+    english: "If ROSE = 6821, then SORE = ?",
+    options: [
+      { hi: "8261", en: "8261", correct: true },
+      { hi: "8621", en: "8621", correct: false },
+      { hi: "8262", en: "8262", correct: false },
+      { hi: "8162", en: "8162", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 3,
+    hindi: "A, B का पिता है। B, C की बहन है। C, D की माँ है। D, A से कैसे संबंधित है?",
+    english: "A is father of B. B is sister of C. C is mother of D. How is D related to A?",
+    options: [
+      { hi: "पोता/पोती", en: "Grandchild", correct: true },
+      { hi: "बेटा", en: "Son", correct: false },
+      { hi: "भतीजा", en: "Nephew", correct: false },
+      { hi: "भाई", en: "Brother", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 4,
+    hindi: "एक व्यक्ति पूर्व की ओर 4 किमी चला, फिर बाएँ मुड़ा और 3 किमी चला। वह प्रारंभिक बिंदु से कितनी दूर है?",
+    english: "A man walks 4 km east, then turns left and walks 3 km. How far is he from starting point?",
+    options: [
+      { hi: "5 किमी", en: "5 km", correct: true },
+      { hi: "6 किमी", en: "6 km", correct: false },
+      { hi: "7 किमी", en: "7 km", correct: false },
+      { hi: "4 किमी", en: "4 km", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 5,
+    hindi: "विषम चुनें: 121, 144, 169, 200, 225",
+    english: "Find odd one: 121, 144, 169, 200, 225",
+    options: [
+      { hi: "121", en: "121", correct: false },
+      { hi: "144", en: "144", correct: false },
+      { hi: "200", en: "200", correct: true },
+      { hi: "225", en: "225", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 6,
+    hindi: "पिता : पुत्र :: चाचा : ?",
+    english: "Father : Son :: Uncle : ?",
+    options: [
+      { hi: "भतीजा", en: "Nephew", correct: true },
+      { hi: "भाई", en: "Brother", correct: false },
+      { hi: "पिता", en: "Father", correct: false },
+      { hi: "दादा", en: "Grandfather", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 7,
+    hindi: "एक पंक्ति में A बाएँ से 9वें और दाएँ से 11वें स्थान पर है। कुल कितने लोग हैं?",
+    english: "In a row, A is 9th from left and 11th from right. Total people?",
+    options: [
+      { hi: "18", en: "18", correct: false },
+      { hi: "19", en: "19", correct: true },
+      { hi: "20", en: "20", correct: false },
+      { hi: "21", en: "21", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 8,
+    hindi: "यदि सोमवार को 'A', मंगलवार को 'B' कहा जाए, तो शुक्रवार को क्या कहेंगे?",
+    english: "If Monday is called 'A', Tuesday is 'B', what is Friday called?",
+    options: [
+      { hi: "D", en: "D", correct: false },
+      { hi: "E", en: "E", correct: true },
+      { hi: "F", en: "F", correct: false },
+      { hi: "G", en: "G", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 9,
+    hindi: "1, 4, 9, 16, 25, ?",
+    english: "1, 4, 9, 16, 25, ?",
+    options: [
+      { hi: "30", en: "30", correct: false },
+      { hi: "36", en: "36", correct: true },
+      { hi: "42", en: "42", correct: false },
+      { hi: "49", en: "49", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "reasoning", qno: 10,
+    hindi: "एक घन के कितने फलक होते हैं?",
+    english: "How many faces does a cube have?",
+    options: [
+      { hi: "4", en: "4", correct: false },
+      { hi: "6", en: "6", correct: true },
+      { hi: "8", en: "8", correct: false },
+      { hi: "12", en: "12", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 2 - GK ---------- */
+  {
+    day: 2, subject: "gk", qno: 1,
+    hindi: "भारत का राष्ट्रीय पशु कौन है?",
+    english: "What is the national animal of India?",
+    options: [
+      { hi: "शेर", en: "Lion", correct: false },
+      { hi: "बाघ", en: "Tiger", correct: true },
+      { hi: "हाथी", en: "Elephant", correct: false },
+      { hi: "मोर", en: "Peacock", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 2,
+    hindi: "ताजमहल किस शहर में स्थित है?",
+    english: "Taj Mahal is located in which city?",
+    options: [
+      { hi: "दिल्ली", en: "Delhi", correct: false },
+      { hi: "आगरा", en: "Agra", correct: true },
+      { hi: "जयपुर", en: "Jaipur", correct: false },
+      { hi: "लखनऊ", en: "Lucknow", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 3,
+    hindi: "भारत का सबसे छोटा राज्य (क्षेत्रफल में) कौन सा है?",
+    english: "Smallest state of India by area?",
+    options: [
+      { hi: "गोवा", en: "Goa", correct: true },
+      { hi: "सिक्किम", en: "Sikkim", correct: false },
+      { hi: "त्रिपुरा", en: "Tripura", correct: false },
+      { hi: "मणिपुर", en: "Manipur", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 4,
+    hindi: "भारतीय राष्ट्रीय कांग्रेस की स्थापना कब हुई?",
+    english: "When was Indian National Congress founded?",
+    options: [
+      { hi: "1885", en: "1885", correct: true },
+      { hi: "1857", en: "1857", correct: false },
+      { hi: "1905", en: "1905", correct: false },
+      { hi: "1920", en: "1920", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 5,
+    hindi: "सबसे कठोर प्राकृतिक पदार्थ कौन सा है?",
+    english: "Which is the hardest natural substance?",
+    options: [
+      { hi: "लोहा", en: "Iron", correct: false },
+      { hi: "हीरा", en: "Diamond", correct: true },
+      { hi: "सोना", en: "Gold", correct: false },
+      { hi: "ग्रेफाइट", en: "Graphite", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 6,
+    hindi: "भारत का राष्ट्रीय खेल किसे माना जाता है (अनौपचारिक)?",
+    english: "Which is considered India's national game (unofficially)?",
+    options: [
+      { hi: "क्रिकेट", en: "Cricket", correct: false },
+      { hi: "हॉकी", en: "Hockey", correct: true },
+      { hi: "कबड्डी", en: "Kabaddi", correct: false },
+      { hi: "फुटबॉल", en: "Football", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 7,
+    hindi: "भारत के पहले प्रधानमंत्री कौन थे?",
+    english: "Who was India's first Prime Minister?",
+    options: [
+      { hi: "सरदार पटेल", en: "Sardar Patel", correct: false },
+      { hi: "जवाहरलाल नेहरू", en: "Jawaharlal Nehru", correct: true },
+      { hi: "राजेंद्र प्रसाद", en: "Rajendra Prasad", correct: false },
+      { hi: "लाल बहादुर शास्त्री", en: "Lal Bahadur Shastri", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 8,
+    hindi: "सूर्य से सबसे निकटतम ग्रह कौन सा है?",
+    english: "Which planet is closest to the Sun?",
+    options: [
+      { hi: "शुक्र", en: "Venus", correct: false },
+      { hi: "बुध", en: "Mercury", correct: true },
+      { hi: "पृथ्वी", en: "Earth", correct: false },
+      { hi: "मंगल", en: "Mars", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 9,
+    hindi: "भारत का सर्वोच्च नागरिक सम्मान कौन सा है?",
+    english: "What is India's highest civilian award?",
+    options: [
+      { hi: "पद्म विभूषण", en: "Padma Vibhushan", correct: false },
+      { hi: "भारत रत्न", en: "Bharat Ratna", correct: true },
+      { hi: "पद्म भूषण", en: "Padma Bhushan", correct: false },
+      { hi: "परमवीर चक्र", en: "Param Vir Chakra", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "gk", qno: 10,
+    hindi: "गोवा को कब पुर्तगाल से आजादी मिली?",
+    english: "When did Goa get freedom from Portugal?",
+    options: [
+      { hi: "1947", en: "1947", correct: false },
+      { hi: "1950", en: "1950", correct: false },
+      { hi: "1961", en: "1961", correct: true },
+      { hi: "1965", en: "1965", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 2 - MATH ---------- */
+  {
+    day: 2, subject: "math", qno: 1,
+    hindi: "एक संख्या का 20%, 80 है। संख्या क्या है?",
+    english: "20% of a number is 80. Find the number.",
+    options: [
+      { hi: "300", en: "300", correct: false },
+      { hi: "400", en: "400", correct: true },
+      { hi: "500", en: "500", correct: false },
+      { hi: "600", en: "600", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 2,
+    hindi: "₹800 पर 5% वार्षिक दर से 3 वर्ष का साधारण ब्याज?",
+    english: "SI on ₹800 at 5% per annum for 3 years?",
+    options: [
+      { hi: "₹100", en: "₹100", correct: false },
+      { hi: "₹120", en: "₹120", correct: true },
+      { hi: "₹140", en: "₹140", correct: false },
+      { hi: "₹160", en: "₹160", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 3,
+    hindi: "एक वस्तु ₹400 में खरीदी और ₹500 में बेची। लाभ% = ?",
+    english: "Bought for ₹400, sold for ₹500. Profit% = ?",
+    options: [
+      { hi: "20%", en: "20%", correct: false },
+      { hi: "25%", en: "25%", correct: true },
+      { hi: "30%", en: "30%", correct: false },
+      { hi: "35%", en: "35%", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 4,
+    hindi: "10, 20, 30, 40, 50 का औसत?",
+    english: "Average of 10, 20, 30, 40, 50?",
+    options: [
+      { hi: "25", en: "25", correct: false },
+      { hi: "30", en: "30", correct: true },
+      { hi: "35", en: "35", correct: false },
+      { hi: "40", en: "40", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 5,
+    hindi: "एक कार 60 किमी/घंटा की गति से 3 घंटे में कितनी दूरी तय करेगी?",
+    english: "A car at 60 km/h covers how much distance in 3 hours?",
+    options: [
+      { hi: "120 किमी", en: "120 km", correct: false },
+      { hi: "180 किमी", en: "180 km", correct: true },
+      { hi: "200 किमी", en: "200 km", correct: false },
+      { hi: "240 किमी", en: "240 km", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 6,
+    hindi: "यदि 12 कर्मचारी 10 दिन में काम करते हैं, तो 15 कर्मचारी कितने दिन लेंगे?",
+    english: "If 12 workers do a job in 10 days, how many days for 15 workers?",
+    options: [
+      { hi: "6", en: "6", correct: false },
+      { hi: "8", en: "8", correct: true },
+      { hi: "9", en: "9", correct: false },
+      { hi: "12", en: "12", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 7,
+    hindi: "एक आयत की लंबाई 10 सेमी और चौड़ाई 5 सेमी है। क्षेत्रफल?",
+    english: "Rectangle length 10 cm, width 5 cm. Area?",
+    options: [
+      { hi: "30 सेमी²", en: "30 cm²", correct: false },
+      { hi: "50 सेमी²", en: "50 cm²", correct: true },
+      { hi: "60 सेमी²", en: "60 cm²", correct: false },
+      { hi: "100 सेमी²", en: "100 cm²", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 8,
+    hindi: "₹2000 पर 10% छूट के बाद मूल्य?",
+    english: "Price after 10% discount on ₹2000?",
+    options: [
+      { hi: "₹1600", en: "₹1600", correct: false },
+      { hi: "₹1800", en: "₹1800", correct: true },
+      { hi: "₹1900", en: "₹1900", correct: false },
+      { hi: "₹1500", en: "₹1500", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 9,
+    hindi: "5:8 :: 15:?",
+    english: "5:8 :: 15:?",
+    options: [
+      { hi: "20", en: "20", correct: false },
+      { hi: "24", en: "24", correct: true },
+      { hi: "28", en: "28", correct: false },
+      { hi: "30", en: "30", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "math", qno: 10,
+    hindi: "0.5 × 0.5 = ?",
+    english: "0.5 × 0.5 = ?",
+    options: [
+      { hi: "0.25", en: "0.25", correct: true },
+      { hi: "0.5", en: "0.5", correct: false },
+      { hi: "1", en: "1", correct: false },
+      { hi: "2.5", en: "2.5", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 2 - ENGLISH ---------- */
+  {
+    day: 2, subject: "english", qno: 1,
+    hindi: "\"Brave\" का पर्यायवाची?",
+    english: "Synonym of \"Brave\"",
+    options: [
+      { hi: "कायर / Coward", en: "Coward", correct: false },
+      { hi: "बहादुर / Courageous", en: "Courageous", correct: true },
+      { hi: "कमजोर / Weak", en: "Weak", correct: false },
+      { hi: "डरपोक / Timid", en: "Timid", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 2,
+    hindi: "\"Victory\" का विलोम?",
+    english: "Antonym of \"Victory\"",
+    options: [
+      { hi: "जीत / Win", en: "Win", correct: false },
+      { hi: "हार / Defeat", en: "Defeat", correct: true },
+      { hi: "सफलता / Success", en: "Success", correct: false },
+      { hi: "ताकत / Strength", en: "Strength", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 3,
+    hindi: "रिक्त भरें: She is married ___ Rahul.",
+    english: "Fill in: She is married ___ Rahul.",
+    options: [
+      { hi: "with", en: "with", correct: false },
+      { hi: "to", en: "to", correct: true },
+      { hi: "for", en: "for", correct: false },
+      { hi: "by", en: "by", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 4,
+    hindi: "मुहावरा: \"A piece of cake\" का अर्थ?",
+    english: "Idiom: \"A piece of cake\" means?",
+    options: [
+      { hi: "केक का टुकड़ा", en: "A slice of cake", correct: false },
+      { hi: "बहुत आसान काम", en: "A very easy task", correct: true },
+      { hi: "मीठी बात", en: "Sweet talk", correct: false },
+      { hi: "महंगी चीज", en: "Expensive thing", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 5,
+    hindi: "सही वर्तनी चुनें",
+    english: "Choose correct spelling",
+    options: [
+      { hi: "Definately", en: "Definately", correct: false },
+      { hi: "Definitely", en: "Definitely", correct: true },
+      { hi: "Definitly", en: "Definitly", correct: false },
+      { hi: "Defenitely", en: "Defenitely", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 6,
+    hindi: "एक शब्द: जो कभी नहीं मरता",
+    english: "One-word: One who never dies",
+    options: [
+      { hi: "Immortal", en: "Immortal", correct: true },
+      { hi: "Mortal", en: "Mortal", correct: false },
+      { hi: "Eternal", en: "Eternal", correct: false },
+      { hi: "Vital", en: "Vital", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 7,
+    hindi: "त्रुटि खोजें: He is more taller than me.",
+    english: "Find error: He is more taller than me.",
+    options: [
+      { hi: "He", en: "He", correct: false },
+      { hi: "more", en: "more", correct: true },
+      { hi: "taller", en: "taller", correct: false },
+      { hi: "me", en: "me", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 8,
+    hindi: "रिक्त भरें: Neither of the boys ___ present.",
+    english: "Fill in: Neither of the boys ___ present.",
+    options: [
+      { hi: "are", en: "are", correct: false },
+      { hi: "is", en: "is", correct: true },
+      { hi: "were", en: "were", correct: false },
+      { hi: "have", en: "have", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 9,
+    hindi: "\"Begin\" का विलोम?",
+    english: "Antonym of \"Begin\"",
+    options: [
+      { hi: "Start", en: "Start", correct: false },
+      { hi: "End", en: "End", correct: true },
+      { hi: "Open", en: "Open", correct: false },
+      { hi: "Launch", en: "Launch", correct: false }
+    ]
+  },
+  {
+    day: 2, subject: "english", qno: 10,
+    hindi: "रिक्त भरें: The sun rises ___ the east.",
+    english: "Fill in: The sun rises ___ the east.",
+    options: [
+      { hi: "on", en: "on", correct: false },
+      { hi: "in", en: "in", correct: true },
+      { hi: "at", en: "at", correct: false },
+      { hi: "by", en: "by", correct: false }
+    ]
+  },
+
+  /* ============================================================
+     DAY 3
+     ============================================================ */
+
+  /* ---------- DAY 3 - REASONING ---------- */
+  {
+    day: 3, subject: "reasoning", qno: 1,
+    hindi: "अगली संख्या: 1, 8, 27, 64, ?",
+    english: "Next number: 1, 8, 27, 64, ?",
+    options: [
+      { hi: "100", en: "100", correct: false },
+      { hi: "125", en: "125", correct: true },
+      { hi: "144", en: "144", correct: false },
+      { hi: "216", en: "216", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 2,
+    hindi: "यदि PEN = 35, BOOK = 43, तो COPY = ?",
+    english: "If PEN = 35, BOOK = 43, then COPY = ?",
+    options: [
+      { hi: "60", en: "60", correct: true },
+      { hi: "55", en: "55", correct: false },
+      { hi: "50", en: "50", correct: false },
+      { hi: "65", en: "65", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 3,
+    hindi: "राम, मोहन का भाई है। मोहन, सीता का पति है। सीता, गीता की बहन है। गीता, राम से कैसे संबंधित है?",
+    english: "Ram is brother of Mohan. Mohan is husband of Sita. Sita is sister of Geeta. How is Geeta related to Ram?",
+    options: [
+      { hi: "बहन", en: "Sister", correct: false },
+      { hi: "भाभी", en: "Sister-in-law", correct: true },
+      { hi: "पत्नी", en: "Wife", correct: false },
+      { hi: "भतीजी", en: "Niece", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 4,
+    hindi: "सूर्य पूर्व में उगता है, तो छाया किस दिशा में पड़ेगी?",
+    english: "If sun rises in east, shadow falls in which direction?",
+    options: [
+      { hi: "पूर्व", en: "East", correct: false },
+      { hi: "पश्चिम", en: "West", correct: true },
+      { hi: "उत्तर", en: "North", correct: false },
+      { hi: "दक्षिण", en: "South", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 5,
+    hindi: "विषम चुनें: गाय, बैल, भैंस, शेर",
+    english: "Odd one out: Cow, Ox, Buffalo, Lion",
+    options: [
+      { hi: "गाय", en: "Cow", correct: false },
+      { hi: "बैल", en: "Ox", correct: false },
+      { hi: "भैंस", en: "Buffalo", correct: false },
+      { hi: "शेर", en: "Lion", correct: true }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 6,
+    hindi: "डॉक्टर : अस्पताल :: शिक्षक : ?",
+    english: "Doctor : Hospital :: Teacher : ?",
+    options: [
+      { hi: "किताब", en: "Book", correct: false },
+      { hi: "स्कूल", en: "School", correct: true },
+      { hi: "छात्र", en: "Student", correct: false },
+      { hi: "कक्षा", en: "Class", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 7,
+    hindi: "एक पंक्ति में 40 छात्र हैं। राहुल बाएँ से 15वें स्थान पर है। दाएँ से कौन सा स्थान?",
+    english: "In a row of 40 students, Rahul is 15th from left. What is his position from right?",
+    options: [
+      { hi: "25वाँ", en: "25th", correct: false },
+      { hi: "26वाँ", en: "26th", correct: true },
+      { hi: "24वाँ", en: "24th", correct: false },
+      { hi: "27वाँ", en: "27th", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 8,
+    hindi: "यदि '+' का मतलब '×', '×' का मतलब '-', तो 5 + 3 × 2 = ?",
+    english: "If '+' means '×', '×' means '-', then 5 + 3 × 2 = ?",
+    options: [
+      { hi: "13", en: "13", correct: true },
+      { hi: "11", en: "11", correct: false },
+      { hi: "16", en: "16", correct: false },
+      { hi: "10", en: "10", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 9,
+    hindi: "2, 5, 10, 17, 26, ?",
+    english: "2, 5, 10, 17, 26, ?",
+    options: [
+      { hi: "35", en: "35", correct: false },
+      { hi: "37", en: "37", correct: true },
+      { hi: "39", en: "39", correct: false },
+      { hi: "40", en: "40", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "reasoning", qno: 10,
+    hindi: "एक त्रिभुज में कितने कोण होते हैं?",
+    english: "How many angles does a triangle have?",
+    options: [
+      { hi: "2", en: "2", correct: false },
+      { hi: "3", en: "3", correct: true },
+      { hi: "4", en: "4", correct: false },
+      { hi: "5", en: "5", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 3 - GK ---------- */
+  {
+    day: 3, subject: "gk", qno: 1,
+    hindi: "भारत का राष्ट्रीय पक्षी कौन है?",
+    english: "What is the national bird of India?",
+    options: [
+      { hi: "कबूतर", en: "Pigeon", correct: false },
+      { hi: "मोर", en: "Peacock", correct: true },
+      { hi: "तोता", en: "Parrot", correct: false },
+      { hi: "बाज", en: "Falcon", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 2,
+    hindi: "सबसे लंबा ग्रह कौन सा है?",
+    english: "Which is the largest planet?",
+    options: [
+      { hi: "पृथ्वी", en: "Earth", correct: false },
+      { hi: "बृहस्पति", en: "Jupiter", correct: true },
+      { hi: "शनि", en: "Saturn", correct: false },
+      { hi: "मंगल", en: "Mars", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 3,
+    hindi: "महात्मा गांधी का जन्म कब हुआ?",
+    english: "When was Mahatma Gandhi born?",
+    options: [
+      { hi: "2 अक्टूबर 1869", en: "2 Oct 1869", correct: true },
+      { hi: "15 अगस्त 1870", en: "15 Aug 1870", correct: false },
+      { hi: "26 जनवरी 1875", en: "26 Jan 1875", correct: false },
+      { hi: "14 नवंबर 1889", en: "14 Nov 1889", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 4,
+    hindi: "भारत की राजधानी क्या है?",
+    english: "What is the capital of India?",
+    options: [
+      { hi: "मुंबई", en: "Mumbai", correct: false },
+      { hi: "नई दिल्ली", en: "New Delhi", correct: true },
+      { hi: "कोलकाता", en: "Kolkata", correct: false },
+      { hi: "चेन्नई", en: "Chennai", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 5,
+    hindi: "पानी का रासायनिक सूत्र क्या है?",
+    english: "What is the chemical formula of water?",
+    options: [
+      { hi: "CO2", en: "CO2", correct: false },
+      { hi: "H2O", en: "H2O", correct: true },
+      { hi: "NaCl", en: "NaCl", correct: false },
+      { hi: "O2", en: "O2", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 6,
+    hindi: "भारत में सबसे अधिक जनसंख्या वाला राज्य कौन सा है?",
+    english: "Most populous state in India?",
+    options: [
+      { hi: "महाराष्ट्र", en: "Maharashtra", correct: false },
+      { hi: "उत्तर प्रदेश", en: "Uttar Pradesh", correct: true },
+      { hi: "बिहार", en: "Bihar", correct: false },
+      { hi: "पश्चिम बंगाल", en: "West Bengal", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 7,
+    hindi: "ओलंपिक कितने वर्ष के अंतराल पर होते हैं?",
+    english: "Olympics are held after how many years?",
+    options: [
+      { hi: "2 वर्ष", en: "2 years", correct: false },
+      { hi: "3 वर्ष", en: "3 years", correct: false },
+      { hi: "4 वर्ष", en: "4 years", correct: true },
+      { hi: "5 वर्ष", en: "5 years", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 8,
+    hindi: "भारत का राष्ट्रीय ध्वज किसने डिजाइन किया?",
+    english: "Who designed the national flag of India?",
+    options: [
+      { hi: "महात्मा गांधी", en: "Mahatma Gandhi", correct: false },
+      { hi: "पिंगली वेंकैया", en: "Pingali Venkayya", correct: true },
+      { hi: "नेहरू", en: "Nehru", correct: false },
+      { hi: "टैगोर", en: "Tagore", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 9,
+    hindi: "सबसे बड़ा महासागर कौन सा है?",
+    english: "Which is the largest ocean?",
+    options: [
+      { hi: "अटलांटिक", en: "Atlantic", correct: false },
+      { hi: "हिंद", en: "Indian", correct: false },
+      { hi: "प्रशांत", en: "Pacific", correct: true },
+      { hi: "आर्कटिक", en: "Arctic", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "gk", qno: 10,
+    hindi: "भारत में हरित क्रांति के जनक कौन हैं?",
+    english: "Who is the father of Green Revolution in India?",
+    options: [
+      { hi: "वर्गीज कुरियन", en: "Verghese Kurien", correct: false },
+      { hi: "एम.एस. स्वामीनाथन", en: "M.S. Swaminathan", correct: true },
+      { hi: "नorman बोरलॉग", en: "Norman Borlaug", correct: false },
+      { hi: "जगदीश चंद्र बोस", en: "Jagdish Chandra Bose", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 3 - MATH ---------- */
+  {
+    day: 3, subject: "math", qno: 1,
+    hindi: "यदि एक संख्या का 1/4 भाग 25 है, तो संख्या?",
+    english: "If 1/4 of a number is 25, find the number.",
+    options: [
+      { hi: "50", en: "50", correct: false },
+      { hi: "75", en: "75", correct: false },
+      { hi: "100", en: "100", correct: true },
+      { hi: "125", en: "125", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 2,
+    hindi: "चक्रवृद्धि ब्याज ₹1000 पर 10% दर से 2 वर्ष का?",
+    english: "Compound Interest on ₹1000 at 10% for 2 years?",
+    options: [
+      { hi: "₹200", en: "₹200", correct: false },
+      { hi: "₹210", en: "₹210", correct: true },
+      { hi: "₹220", en: "₹220", correct: false },
+      { hi: "₹250", en: "₹250", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 3,
+    hindi: "एक वस्तु ₹500 में खरीदी, 20% लाभ पर बेची। विक्रय मूल्य?",
+    english: "Bought for ₹500, sold at 20% profit. Selling price?",
+    options: [
+      { hi: "₹550", en: "₹550", correct: false },
+      { hi: "₹600", en: "₹600", correct: true },
+      { hi: "₹650", en: "₹650", correct: false },
+      { hi: "₹700", en: "₹700", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 4,
+    hindi: "15, 25, 35, 45, 55, 65 का औसत?",
+    english: "Average of 15, 25, 35, 45, 55, 65?",
+    options: [
+      { hi: "35", en: "35", correct: false },
+      { hi: "40", en: "40", correct: true },
+      { hi: "45", en: "45", correct: false },
+      { hi: "50", en: "50", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 5,
+    hindi: "एक ट्रेन 72 किमी/घंटा से चल रही है। 5 घंटे में दूरी?",
+    english: "A train at 72 km/h. Distance in 5 hours?",
+    options: [
+      { hi: "300 किमी", en: "300 km", correct: false },
+      { hi: "360 किमी", en: "360 km", correct: true },
+      { hi: "400 किमी", en: "400 km", correct: false },
+      { hi: "450 किमी", en: "450 km", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 6,
+    hindi: "A और B मिलकर काम 6 दिन में, A अकेला 10 दिन में। B अकेला कितने दिन?",
+    english: "A and B together finish in 6 days, A alone in 10 days. B alone?",
+    options: [
+      { hi: "12", en: "12", correct: false },
+      { hi: "15", en: "15", correct: true },
+      { hi: "18", en: "18", correct: false },
+      { hi: "20", en: "20", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 7,
+    hindi: "एक वर्ग की भुजा 8 सेमी है। परिमाप?",
+    english: "Square side 8 cm. Perimeter?",
+    options: [
+      { hi: "16 सेमी", en: "16 cm", correct: false },
+      { hi: "24 सेमी", en: "24 cm", correct: false },
+      { hi: "32 सेमी", en: "32 cm", correct: true },
+      { hi: "64 सेमी", en: "64 cm", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 8,
+    hindi: "यदि 3:5 = x:20, तो x = ?",
+    english: "If 3:5 = x:20, then x = ?",
+    options: [
+      { hi: "10", en: "10", correct: false },
+      { hi: "12", en: "12", correct: true },
+      { hi: "14", en: "14", correct: false },
+      { hi: "15", en: "15", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 9,
+    hindi: "0.1 + 0.01 + 0.001 = ?",
+    english: "0.1 + 0.01 + 0.001 = ?",
+    options: [
+      { hi: "0.111", en: "0.111", correct: true },
+      { hi: "0.1101", en: "0.1101", correct: false },
+      { hi: "0.1111", en: "0.1111", correct: false },
+      { hi: "1.11", en: "1.11", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "math", qno: 10,
+    hindi: "50% of 60% of 200 = ?",
+    english: "50% of 60% of 200 = ?",
+    options: [
+      { hi: "50", en: "50", correct: false },
+      { hi: "60", en: "60", correct: true },
+      { hi: "70", en: "70", correct: false },
+      { hi: "80", en: "80", correct: false }
+    ]
+  },
+
+  /* ---------- DAY 3 - ENGLISH ---------- */
+  {
+    day: 3, subject: "english", qno: 1,
+    hindi: "\"Happy\" का पर्यायवाची?",
+    english: "Synonym of \"Happy\"",
+    options: [
+      { hi: "दुखी / Sad", en: "Sad", correct: false },
+      { hi: "प्रसन्न / Joyful", en: "Joyful", correct: true },
+      { hi: "गुस्सा / Angry", en: "Angry", correct: false },
+      { hi: "डरा / Afraid", en: "Afraid", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 2,
+    hindi: "\"Rich\" का विलोम?",
+    english: "Antonym of \"Rich\"",
+    options: [
+      { hi: "Wealthy / अमीर", en: "Wealthy", correct: false },
+      { hi: "Poor / गरीब", en: "Poor", correct: true },
+      { hi: "Strong / मजबूत", en: "Strong", correct: false },
+      { hi: "Big / बड़ा", en: "Big", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 3,
+    hindi: "रिक्त भरें: He is afraid ___ dogs.",
+    english: "Fill in: He is afraid ___ dogs.",
+    options: [
+      { hi: "from", en: "from", correct: false },
+      { hi: "of", en: "of", correct: true },
+      { hi: "with", en: "with", correct: false },
+      { hi: "at", en: "at", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 4,
+    hindi: "मुहावरा: \"Once in a blue moon\" का अर्थ?",
+    english: "Idiom: \"Once in a blue moon\" means?",
+    options: [
+      { hi: "बहुत बार", en: "Very often", correct: false },
+      { hi: "बहुत कम", en: "Very rarely", correct: true },
+      { hi: "रात में", en: "At night", correct: false },
+      { hi: "चाँद पर", en: "On the moon", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 5,
+    hindi: "सही वर्तनी चुनें",
+    english: "Choose correct spelling",
+    options: [
+      { hi: "Occassion", en: "Occassion", correct: false },
+      { hi: "Occasion", en: "Occasion", correct: true },
+      { hi: "Occation", en: "Occation", correct: false },
+      { hi: "Ocassion", en: "Ocassion", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 6,
+    hindi: "एक शब्द: जो सब कुछ जानता है",
+    english: "One-word: One who knows everything",
+    options: [
+      { hi: "Omniscient", en: "Omniscient", correct: true },
+      { hi: "Omnipresent", en: "Omnipresent", correct: false },
+      { hi: "Omnipotent", en: "Omnipotent", correct: false },
+      { hi: "Ignorant", en: "Ignorant", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 7,
+    hindi: "त्रुटि खोजें: I am knowing the answer.",
+    english: "Find error: I am knowing the answer.",
+    options: [
+      { hi: "I", en: "I", correct: false },
+      { hi: "am knowing", en: "am knowing", correct: true },
+      { hi: "the", en: "the", correct: false },
+      { hi: "answer", en: "answer", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 8,
+    hindi: "रिक्त भरें: He has been working ___ morning.",
+    english: "Fill in: He has been working ___ morning.",
+    options: [
+      { hi: "for", en: "for", correct: false },
+      { hi: "since", en: "since", correct: true },
+      { hi: "from", en: "from", correct: false },
+      { hi: "by", en: "by", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 9,
+    hindi: "\"Increase\" का विलोम?",
+    english: "Antonym of \"Increase\"",
+    options: [
+      { hi: "Rise", en: "Rise", correct: false },
+      { hi: "Decrease", en: "Decrease", correct: true },
+      { hi: "Grow", en: "Grow", correct: false },
+      { hi: "Expand", en: "Expand", correct: false }
+    ]
+  },
+  {
+    day: 3, subject: "english", qno: 10,
+    hindi: "रिक्त भरें: She is ___ M.A. in English.",
+    english: "Fill in: She is ___ M.A. in English.",
+    options: [
+      { hi: "a", en: "a", correct: false },
+      { hi: "an", en: "an", correct: true },
+      { hi: "the", en: "the", correct: false },
+      { hi: "कोई नहीं / no article", en: "no article", correct: false }
+    ]
+  },
+    /* ============================================================
+     DAY 4
+     ============================================================ */
+  /* DAY 4 - REASONING */
+  { day:4, subject:"reasoning", qno:1, hindi:"अगली संख्या: 7, 14, 28, 56, ?", english:"Next: 7, 14, 28, 56, ?", options:[{hi:"102",en:"102",correct:false},{hi:"112",en:"112",correct:true},{hi:"120",en:"120",correct:false},{hi:"124",en:"124",correct:false}] },
+  { day:4, subject:"reasoning", qno:2, hindi:"यदि TABLE = 61546, तो BAT = ?", english:"If TABLE = 61546, then BAT = ?", options:[{hi:"164",en:"164",correct:true},{hi:"146",en:"146",correct:false},{hi:"641",en:"641",correct:false},{hi:"416",en:"416",correct:false}] },
+  { day:4, subject:"reasoning", qno:3, hindi:"P, Q का पिता है। Q, R का भाई है। R, S की माँ है। S, P से कैसे संबंधित है?", english:"P is father of Q. Q is brother of R. R is mother of S. How is S related to P?", options:[{hi:"पोता/पोती",en:"Grandchild",correct:true},{hi:"बेटा",en:"Son",correct:false},{hi:"भतीजा",en:"Nephew",correct:false},{hi:"दादा",en:"Grandfather",correct:false}] },
+  { day:4, subject:"reasoning", qno:4, hindi:"सुबह सूर्य पूर्व में। आपका मुँह उत्तर की ओर है। दायाँ हाथ किस दिशा में?", english:"Morning sun in east. You face north. Right hand points?", options:[{hi:"पूर्व",en:"East",correct:true},{hi:"पश्चिम",en:"West",correct:false},{hi:"उत्तर",en:"North",correct:false},{hi:"दक्षिण",en:"South",correct:false}] },
+  { day:4, subject:"reasoning", qno:5, hindi:"विषम: 16, 25, 36, 49, 65", english:"Odd: 16, 25, 36, 49, 65", options:[{hi:"16",en:"16",correct:false},{hi:"25",en:"25",correct:false},{hi:"36",en:"36",correct:false},{hi:"65",en:"65",correct:true}] },
+  { day:4, subject:"reasoning", qno:6, hindi:"कलम : लिखना :: चाकू : ?", english:"Pen : Write :: Knife : ?", options:[{hi:"काटना",en:"Cut",correct:true},{hi:"धार",en:"Sharp",correct:false},{hi:"लोहा",en:"Iron",correct:false},{hi:"रसोई",en:"Kitchen",correct:false}] },
+  { day:4, subject:"reasoning", qno:7, hindi:"एक कक्षा में 50 छात्र। मोहन ऊपर से 20वाँ। नीचे से?", english:"Class of 50. Mohan 20th from top. From bottom?", options:[{hi:"30वाँ",en:"30th",correct:false},{hi:"31वाँ",en:"31st",correct:true},{hi:"32वाँ",en:"32nd",correct:false},{hi:"29वाँ",en:"29th",correct:false}] },
+  { day:4, subject:"reasoning", qno:8, hindi:"यदि '+' = ÷, '÷' = +, तो 20 + 4 ÷ 2 = ?", english:"If '+' = ÷, '÷' = +, then 20 + 4 ÷ 2 = ?", options:[{hi:"9",en:"9",correct:false},{hi:"12",en:"12",correct:true},{hi:"15",en:"15",correct:false},{hi:"8",en:"8",correct:false}] },
+  { day:4, subject:"reasoning", qno:9, hindi:"अगली संख्या: 100, 90, 81, 73, ?", english:"Next: 100, 90, 81, 73, ?", options:[{hi:"66",en:"66",correct:true},{hi:"65",en:"65",correct:false},{hi:"64",en:"64",correct:false},{hi:"68",en:"68",correct:false}] },
+  { day:4, subject:"reasoning", qno:10, hindi:"एक पंक्ति में 6 लोग हैं। P, Q के बाएँ, R के दाएँ। सबसे बाएँ कौन?", english:"6 people in a row. P is left of Q, right of R. Who is leftmost?", options:[{hi:"P",en:"P",correct:false},{hi:"Q",en:"Q",correct:false},{hi:"R",en:"R",correct:true},{hi:"निर्धारित नहीं",en:"Cannot determine",correct:false}] },
+  /* DAY 4 - GK */
+  { day:4, subject:"gk", qno:1, hindi:"भारतीय संविधान में कितने मौलिक अधिकार हैं?", english:"How many Fundamental Rights in Indian Constitution?", options:[{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:true},{hi:"7",en:"7",correct:false},{hi:"8",en:"8",correct:false}] },
+  { day:4, subject:"gk", qno:2, hindi:"भारत का सबसे ऊँचा पर्वत शिखर?", english:"Highest mountain peak of India?", options:[{hi:"K2",en:"K2",correct:true},{hi:"कंचनजंगा",en:"Kanchenjunga",correct:false},{hi:"नंदा देवी",en:"Nanda Devi",correct:false},{hi:"एवरेस्ट",en:"Everest",correct:false}] },
+  { day:4, subject:"gk", qno:3, hindi:"पंचायती राज किस संशोधन से जुड़ा है?", english:"Panchayati Raj linked to which amendment?", options:[{hi:"42वाँ",en:"42nd",correct:false},{hi:"44वाँ",en:"44th",correct:false},{hi:"73वाँ",en:"73rd",correct:true},{hi:"86वाँ",en:"86th",correct:false}] },
+  { day:4, subject:"gk", qno:4, hindi:"प्रकाश की गति कितनी है?", english:"Speed of light?", options:[{hi:"3×10⁶ m/s",en:"3×10⁶ m/s",correct:false},{hi:"3×10⁸ m/s",en:"3×10⁸ m/s",correct:true},{hi:"3×10¹⁰ m/s",en:"3×10¹⁰ m/s",correct:false},{hi:"3×10⁵ m/s",en:"3×10⁵ m/s",correct:false}] },
+  { day:4, subject:"gk", qno:5, hindi:"भारत का राष्ट्रीय फूल कौन है?", english:"National flower of India?", options:[{hi:"गुलाब",en:"Rose",correct:false},{hi:"कमल",en:"Lotus",correct:true},{hi:"सूरजमुखी",en:"Sunflower",correct:false},{hi:"चमेली",en:"Jasmine",correct:false}] },
+  { day:4, subject:"gk", qno:6, hindi:"संयुक्त राष्ट्र की स्थापना कब हुई?", english:"When was UN founded?", options:[{hi:"1945",en:"1945",correct:true},{hi:"1947",en:"1947",correct:false},{hi:"1950",en:"1950",correct:false},{hi:"1942",en:"1942",correct:false}] },
+  { day:4, subject:"gk", qno:7, hindi:"भारत में सबसे बड़ी झील (खारी)?", english:"Largest saltwater lake in India?", options:[{hi:"चिल्का",en:"Chilika",correct:false},{hi:"सांभर",en:"Sambhar",correct:true},{hi:"वुलर",en:"Wular",correct:false},{hi:"डल",en:"Dal",correct:false}] },
+  { day:4, subject:"gk", qno:8, hindi:"क्रिकेट में एक ओवर में कितनी गेंदें?", english:"Balls in one over of cricket?", options:[{hi:"4",en:"4",correct:false},{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:true},{hi:"8",en:"8",correct:false}] },
+  { day:4, subject:"gk", qno:9, hindi:"भारत का केंद्रीय बैंक कौन है?", english:"Central bank of India?", options:[{hi:"SBI",en:"SBI",correct:false},{hi:"RBI",en:"RBI",correct:true},{hi:"NABARD",en:"NABARD",correct:false},{hi:"SEBI",en:"SEBI",correct:false}] },
+  { day:4, subject:"gk", qno:10, hindi:"स्वतंत्रता दिवस कब मनाया जाता है?", english:"When is Independence Day celebrated?", options:[{hi:"26 जन",en:"26 Jan",correct:false},{hi:"15 अग",en:"15 Aug",correct:true},{hi:"2 अक्टू",en:"2 Oct",correct:false},{hi:"14 नव",en:"14 Nov",correct:false}] },
+  /* DAY 4 - MATH */
+  { day:4, subject:"math", qno:1, hindi:"₹1500 का 12% = ?", english:"12% of ₹1500 = ?", options:[{hi:"₹150",en:"₹150",correct:false},{hi:"₹180",en:"₹180",correct:true},{hi:"₹200",en:"₹200",correct:false},{hi:"₹220",en:"₹220",correct:false}] },
+  { day:4, subject:"math", qno:2, hindi:"SI on ₹2000 at 8% for 3 years?", english:"SI on ₹2000 at 8% for 3 years?", options:[{hi:"₹400",en:"₹400",correct:false},{hi:"₹480",en:"₹480",correct:true},{hi:"₹500",en:"₹500",correct:false},{hi:"₹560",en:"₹560",correct:false}] },
+  { day:4, subject:"math", qno:3, hindi:"CP=₹250, SP=₹300. Profit%?", english:"CP=₹250, SP=₹300. Profit%?", options:[{hi:"15%",en:"15%",correct:false},{hi:"20%",en:"20%",correct:true},{hi:"25%",en:"25%",correct:false},{hi:"30%",en:"30%",correct:false}] },
+  { day:4, subject:"math", qno:4, hindi:"2, 4, 6, 8, 10, 12 का औसत?", english:"Average of 2,4,6,8,10,12?", options:[{hi:"6",en:"6",correct:false},{hi:"7",en:"7",correct:true},{hi:"8",en:"8",correct:false},{hi:"9",en:"9",correct:false}] },
+  { day:4, subject:"math", qno:5, hindi:"ट्रेन 90 किमी/घंटा, 4 घंटे में दूरी?", english:"Train 90 km/h, distance in 4h?", options:[{hi:"300",en:"300",correct:false},{hi:"320",en:"320",correct:false},{hi:"360",en:"360",correct:true},{hi:"400",en:"400",correct:false}] },
+  { day:4, subject:"math", qno:6, hindi:"6 आदमी 8 दिन में काम। 4 आदमी कितने दिन?", english:"6 men do work in 8 days. 4 men how many days?", options:[{hi:"10",en:"10",correct:false},{hi:"12",en:"12",correct:true},{hi:"14",en:"14",correct:false},{hi:"16",en:"16",correct:false}] },
+  { day:4, subject:"math", qno:7, hindi:"वृत्त की त्रिज्या 14 सेमी, क्षेत्रफल?", english:"Circle radius 14 cm, area?", options:[{hi:"516",en:"516",correct:false},{hi:"616",en:"616",correct:true},{hi:"716",en:"716",correct:false},{hi:"816",en:"816",correct:false}] },
+  { day:4, subject:"math", qno:8, hindi:"5:7 :: 25:?", english:"5:7 :: 25:?", options:[{hi:"30",en:"30",correct:false},{hi:"35",en:"35",correct:true},{hi:"40",en:"40",correct:false},{hi:"45",en:"45",correct:false}] },
+  { day:4, subject:"math", qno:9, hindi:"3/5 + 2/5 = ?", english:"3/5 + 2/5 = ?", options:[{hi:"1",en:"1",correct:true},{hi:"5/10",en:"5/10",correct:false},{hi:"6/10",en:"6/10",correct:false},{hi:"2/5",en:"2/5",correct:false}] },
+  { day:4, subject:"math", qno:10, hindi:"₹800 पर 25% छूट के बाद मूल्य?", english:"Price after 25% discount on ₹800?", options:[{hi:"₹500",en:"₹500",correct:false},{hi:"₹600",en:"₹600",correct:true},{hi:"₹650",en:"₹650",correct:false},{hi:"₹700",en:"₹700",correct:false}] },
+  /* DAY 4 - ENGLISH */
+  { day:4, subject:"english", qno:1, hindi:"\"Quick\" का पर्यायवाची?", english:"Synonym of \"Quick\"", options:[{hi:"Slow",en:"Slow",correct:false},{hi:"Fast",en:"Fast",correct:true},{hi:"Lazy",en:"Lazy",correct:false},{hi:"Late",en:"Late",correct:false}] },
+  { day:4, subject:"english", qno:2, hindi:"\"Hot\" का विलोम?", english:"Antonym of \"Hot\"", options:[{hi:"Warm",en:"Warm",correct:false},{hi:"Cold",en:"Cold",correct:true},{hi:"Boil",en:"Boil",correct:false},{hi:"Fire",en:"Fire",correct:false}] },
+  { day:4, subject:"english", qno:3, hindi:"रिक्त भरें: I am fond ___ music.", english:"Fill in: I am fond ___ music.", options:[{hi:"of",en:"of",correct:true},{hi:"for",en:"for",correct:false},{hi:"with",en:"with",correct:false},{hi:"at",en:"at",correct:false}] },
+  { day:4, subject:"english", qno:4, hindi:"मुहावरा: \"Under the weather\"?", english:"Idiom: \"Under the weather\"?", options:[{hi:"बीमार",en:"Sick",correct:true},{hi:"बारिश में",en:"In rain",correct:false},{hi:"गुस्से में",en:"Angry",correct:false},{hi:"खुश",en:"Happy",correct:false}] },
+  { day:4, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Tommorow",en:"Tommorow",correct:false},{hi:"Tomorrow",en:"Tomorrow",correct:true},{hi:"Tomorow",en:"Tomorow",correct:false},{hi:"Tommorrow",en:"Tommorrow",correct:false}] },
+  { day:4, subject:"english", qno:6, hindi:"एक शब्द: जो सब जगह मौजूद है", english:"One-word: Present everywhere", options:[{hi:"Omniscient",en:"Omniscient",correct:false},{hi:"Omnipresent",en:"Omnipresent",correct:true},{hi:"Omnipotent",en:"Omnipotent",correct:false},{hi:"Universal",en:"Universal",correct:false}] },
+  { day:4, subject:"english", qno:7, hindi:"त्रुटि: She has been reading since two hours.", english:"Error: She has been reading since two hours.", options:[{hi:"She",en:"She",correct:false},{hi:"has",en:"has",correct:false},{hi:"since",en:"since",correct:true},{hi:"reading",en:"reading",correct:false}] },
+  { day:4, subject:"english", qno:8, hindi:"रिक्त: He is senior ___ me.", english:"Fill in: He is senior ___ me.", options:[{hi:"than",en:"than",correct:false},{hi:"to",en:"to",correct:true},{hi:"from",en:"from",correct:false},{hi:"of",en:"of",correct:false}] },
+  { day:4, subject:"english", qno:9, hindi:"\"Love\" का विलोम?", english:"Antonym of \"Love\"", options:[{hi:"Hate",en:"Hate",correct:true},{hi:"Like",en:"Like",correct:false},{hi:"Care",en:"Care",correct:false},{hi:"Adore",en:"Adore",correct:false}] },
+  { day:4, subject:"english", qno:10, hindi:"रिक्त: He is ___ European.", english:"Fill in: He is ___ European.", options:[{hi:"a",en:"a",correct:true},{hi:"an",en:"an",correct:false},{hi:"the",en:"the",correct:false},{hi:"none",en:"none",correct:false}] },
+
+  /* ============================================================
+     DAY 5
+     ============================================================ */
+  /* DAY 5 - REASONING */
+  { day:5, subject:"reasoning", qno:1, hindi:"अगली संख्या: 5, 11, 23, 47, ?", english:"Next: 5, 11, 23, 47, ?", options:[{hi:"94",en:"94",correct:false},{hi:"95",en:"95",correct:true},{hi:"96",en:"96",correct:false},{hi:"98",en:"98",correct:false}] },
+  { day:5, subject:"reasoning", qno:2, hindi:"यदि A=1, B=2... तो BOOK = ?", english:"If A=1, B=2... then BOOK = ?", options:[{hi:"43",en:"43",correct:true},{hi:"44",en:"44",correct:false},{hi:"45",en:"45",correct:false},{hi:"46",en:"46",correct:false}] },
+  { day:5, subject:"reasoning", qno:3, hindi:"A, B का भाई। B, C की बहन। C, D का पिता। A, D से?", english:"A is brother of B. B is sister of C. C is father of D. A related to D?", options:[{hi:"चाचा",en:"Uncle",correct:true},{hi:"पिता",en:"Father",correct:false},{hi:"भाई",en:"Brother",correct:false},{hi:"दादा",en:"Grandfather",correct:false}] },
+  { day:5, subject:"reasoning", qno:4, hindi:"पूर्व की ओर मुँह, फिर 90° दाएँ, फिर 180°। अब दिशा?", english:"Face east, turn 90° right, then 180°. Direction?", options:[{hi:"पूर्व",en:"East",correct:false},{hi:"पश्चिम",en:"West",correct:true},{hi:"उत्तर",en:"North",correct:false},{hi:"दक्षिण",en:"South",correct:false}] },
+  { day:5, subject:"reasoning", qno:5, hindi:"विषम: 8, 27, 64, 100, 125", english:"Odd: 8, 27, 64, 100, 125", options:[{hi:"8",en:"8",correct:false},{hi:"27",en:"27",correct:false},{hi:"64",en:"64",correct:false},{hi:"100",en:"100",correct:true}] },
+  { day:5, subject:"reasoning", qno:6, hindi:"आँख : देखना :: कान : ?", english:"Eye : See :: Ear : ?", options:[{hi:"सुनना",en:"Hear",correct:true},{hi:"बोलना",en:"Speak",correct:false},{hi:"सूंघना",en:"Smell",correct:false},{hi:"चखना",en:"Taste",correct:false}] },
+  { day:5, subject:"reasoning", qno:7, hindi:"पंक्ति में 30 लोग। राम बाएँ से 12वाँ। दाएँ से?", english:"30 in row. Ram 12th from left. From right?", options:[{hi:"18वाँ",en:"18th",correct:false},{hi:"19वाँ",en:"19th",correct:true},{hi:"20वाँ",en:"20th",correct:false},{hi:"17वाँ",en:"17th",correct:false}] },
+  { day:5, subject:"reasoning", qno:8, hindi:"यदि 4×5=19, 6×7=41, तो 8×9=?", english:"If 4×5=19, 6×7=41, then 8×9=?", options:[{hi:"70",en:"70",correct:false},{hi:"71",en:"71",correct:true},{hi:"72",en:"72",correct:false},{hi:"73",en:"73",correct:false}] },
+  { day:5, subject:"reasoning", qno:9, hindi:"1, 3, 6, 10, 15, ?", english:"1, 3, 6, 10, 15, ?", options:[{hi:"20",en:"20",correct:false},{hi:"21",en:"21",correct:true},{hi:"22",en:"22",correct:false},{hi:"24",en:"24",correct:false}] },
+  { day:5, subject:"reasoning", qno:10, hindi:"घन के कितने किनारे?", english:"How many edges in a cube?", options:[{hi:"8",en:"8",correct:false},{hi:"10",en:"10",correct:false},{hi:"12",en:"12",correct:true},{hi:"14",en:"14",correct:false}] },
+  /* DAY 5 - GK */
+  { day:5, subject:"gk", qno:1, hindi:"भारत का राष्ट्रीय गीत कौन?", english:"National song of India?", options:[{hi:"जन गण मन",en:"Jana Gana Mana",correct:false},{hi:"वंदे मातरम्",en:"Vande Mataram",correct:true},{hi:"सारे जहाँ से अच्छा",en:"Sare Jahan Se Achha",correct:false},{hi:"ऐ मेरे वतन",en:"Ae Mere Watan",correct:false}] },
+  { day:5, subject:"gk", qno:2, hindi:"सबसे छोटा ग्रह?", english:"Smallest planet?", options:[{hi:"बुध",en:"Mercury",correct:true},{hi:"मंगल",en:"Mars",correct:false},{hi:"शुक्र",en:"Venus",correct:false},{hi:"प्लूटो",en:"Pluto",correct:false}] },
+  { day:5, subject:"gk", qno:3, hindi:"1857 का विद्रोह कहाँ से शुरू?", english:"1857 revolt started from?", options:[{hi:"दिल्ली",en:"Delhi",correct:false},{hi:"मेरठ",en:"Meerut",correct:true},{hi:"कानपुर",en:"Kanpur",correct:false},{hi:"झाँसी",en:"Jhansi",correct:false}] },
+  { day:5, subject:"gk", qno:4, hindi:"सबसे कठोर पदार्थ?", english:"Hardest substance?", options:[{hi:"लोहा",en:"Iron",correct:false},{hi:"हीरा",en:"Diamond",correct:true},{hi:"स्टील",en:"Steel",correct:false},{hi:"ग्रेफाइट",en:"Graphite",correct:false}] },
+  { day:5, subject:"gk", qno:5, hindi:"संसद के कितने सदन?", english:"How many houses in Parliament?", options:[{hi:"1",en:"1",correct:false},{hi:"2",en:"2",correct:true},{hi:"3",en:"3",correct:false},{hi:"4",en:"4",correct:false}] },
+  { day:5, subject:"gk", qno:6, hindi:"भारत का सबसे बड़ा बंदरगाह?", english:"Largest port of India?", options:[{hi:"मुंबई",en:"Mumbai",correct:false},{hi:"जवाहरलाल नेहरू",en:"Jawaharlal Nehru",correct:true},{hi:"कोलकाता",en:"Kolkata",correct:false},{hi:"चेन्नई",en:"Chennai",correct:false}] },
+  { day:5, subject:"gk", qno:7, hindi:"रक्त का pH मान?", english:"pH of blood?", options:[{hi:"6.4",en:"6.4",correct:false},{hi:"7.4",en:"7.4",correct:true},{hi:"8.4",en:"8.4",correct:false},{hi:"5.4",en:"5.4",correct:false}] },
+  { day:5, subject:"gk", qno:8, hindi:"भारत का सबसे बड़ा राज्य (जनसंख्या)?", english:"Largest state by population?", options:[{hi:"महाराष्ट्र",en:"Maharashtra",correct:false},{hi:"UP",en:"UP",correct:true},{hi:"बिहार",en:"Bihar",correct:false},{hi:"WB",en:"WB",correct:false}] },
+  { day:5, subject:"gk", qno:9, hindi:"राष्ट्रीय खेल दिवस कब?", english:"National Sports Day?", options:[{hi:"29 अग",en:"29 Aug",correct:true},{hi:"15 अग",en:"15 Aug",correct:false},{hi:"5 सित",en:"5 Sep",correct:false},{hi:"2 अक्टू",en:"2 Oct",correct:false}] },
+  { day:5, subject:"gk", qno:10, hindi:"मुगल साम्राज्य के संस्थापक?", english:"Founder of Mughal Empire?", options:[{hi:"अकबर",en:"Akbar",correct:false},{hi:"बाबर",en:"Babur",correct:true},{hi:"हुमायूँ",en:"Humayun",correct:false},{hi:"शाहजहाँ",en:"Shah Jahan",correct:false}] },
+  /* DAY 5 - MATH */
+  { day:5, subject:"math", qno:1, hindi:"₹2500 का 20% = ?", english:"20% of ₹2500 = ?", options:[{hi:"₹400",en:"₹400",correct:false},{hi:"₹500",en:"₹500",correct:true},{hi:"₹600",en:"₹600",correct:false},{hi:"₹700",en:"₹700",correct:false}] },
+  { day:5, subject:"math", qno:2, hindi:"CI ₹2000 पर 10% 2 वर्ष?", english:"CI on ₹2000 at 10% for 2 yrs?", options:[{hi:"₹400",en:"₹400",correct:false},{hi:"₹420",en:"₹420",correct:true},{hi:"₹440",en:"₹440",correct:false},{hi:"₹460",en:"₹460",correct:false}] },
+  { day:5, subject:"math", qno:3, hindi:"CP=₹600, SP=₹540. Loss%?", english:"CP=₹600, SP=₹540. Loss%?", options:[{hi:"5%",en:"5%",correct:false},{hi:"10%",en:"10%",correct:true},{hi:"15%",en:"15%",correct:false},{hi:"20%",en:"20%",correct:false}] },
+  { day:5, subject:"math", qno:4, hindi:"औसत: 12, 15, 18, 21, 24", english:"Average: 12,15,18,21,24", options:[{hi:"16",en:"16",correct:false},{hi:"17",en:"17",correct:false},{hi:"18",en:"18",correct:true},{hi:"19",en:"19",correct:false}] },
+  { day:5, subject:"math", qno:5, hindi:"ट्रेन 45 किमी/घंटा, 8 घंटे दूरी?", english:"Train 45 km/h, distance in 8h?", options:[{hi:"320",en:"320",correct:false},{hi:"340",en:"340",correct:false},{hi:"360",en:"360",correct:true},{hi:"380",en:"380",correct:false}] },
+  { day:5, subject:"math", qno:6, hindi:"A=12 दिन, B=6 दिन। साथ में?", english:"A=12 days, B=6 days. Together?", options:[{hi:"3",en:"3",correct:false},{hi:"4",en:"4",correct:true},{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:false}] },
+  { day:5, subject:"math", qno:7, hindi:"वर्ग भुजा 12, क्षेत्रफल?", english:"Square side 12, area?", options:[{hi:"120",en:"120",correct:false},{hi:"132",en:"132",correct:false},{hi:"144",en:"144",correct:true},{hi:"156",en:"156",correct:false}] },
+  { day:5, subject:"math", qno:8, hindi:"7:9 :: 21:?", english:"7:9 :: 21:?", options:[{hi:"24",en:"24",correct:false},{hi:"27",en:"27",correct:true},{hi:"30",en:"30",correct:false},{hi:"33",en:"33",correct:false}] },
+  { day:5, subject:"math", qno:9, hindi:"0.25 × 4 = ?", english:"0.25 × 4 = ?", options:[{hi:"0.5",en:"0.5",correct:false},{hi:"1",en:"1",correct:true},{hi:"1.5",en:"1.5",correct:false},{hi:"2",en:"2",correct:false}] },
+  { day:5, subject:"math", qno:10, hindi:"₹1500 पर 20% + 10% छूट?", english:"₹1500 with 20% + 10% discount?", options:[{hi:"₹1000",en:"₹1000",correct:false},{hi:"₹1080",en:"₹1080",correct:true},{hi:"₹1100",en:"₹1100",correct:false},{hi:"₹1200",en:"₹1200",correct:false}] },
+  /* DAY 5 - ENGLISH */
+  { day:5, subject:"english", qno:1, hindi:"\"Smart\" का पर्यायवाची?", english:"Synonym of \"Smart\"", options:[{hi:"Dull",en:"Dull",correct:false},{hi:"Clever",en:"Clever",correct:true},{hi:"Lazy",en:"Lazy",correct:false},{hi:"Slow",en:"Slow",correct:false}] },
+  { day:5, subject:"english", qno:2, hindi:"\"Victory\" का विलोम?", english:"Antonym of \"Victory\"", options:[{hi:"Win",en:"Win",correct:false},{hi:"Defeat",en:"Defeat",correct:true},{hi:"Success",en:"Success",correct:false},{hi:"Triumph",en:"Triumph",correct:false}] },
+  { day:5, subject:"english", qno:3, hindi:"रिक्त: Listen ___ me.", english:"Fill: Listen ___ me.", options:[{hi:"to",en:"to",correct:true},{hi:"at",en:"at",correct:false},{hi:"for",en:"for",correct:false},{hi:"with",en:"with",correct:false}] },
+  { day:5, subject:"english", qno:4, hindi:"मुहावरा: \"Hit the nail on the head\"?", english:"Idiom: \"Hit the nail on the head\"?", options:[{hi:"सही बात कहना",en:"Say exactly right thing",correct:true},{hi:"चोट लगाना",en:"Injure",correct:false},{hi:"गुस्सा करना",en:"Get angry",correct:false},{hi:"नाखून काटना",en:"Cut nails",correct:false}] },
+  { day:5, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Neccessary",en:"Neccessary",correct:false},{hi:"Necessary",en:"Necessary",correct:true},{hi:"Necesary",en:"Necesary",correct:false},{hi:"Necessery",en:"Necessery",correct:false}] },
+  { day:5, subject:"english", qno:6, hindi:"एक शब्द: जो सब कुछ कर सकता है", english:"One-word: All-powerful", options:[{hi:"Omniscient",en:"Omniscient",correct:false},{hi:"Omnipresent",en:"Omnipresent",correct:false},{hi:"Omnipotent",en:"Omnipotent",correct:true},{hi:"Universal",en:"Universal",correct:false}] },
+  { day:5, subject:"english", qno:7, hindi:"त्रुटि: One of my friend is a doctor.", english:"Error: One of my friend is a doctor.", options:[{hi:"One",en:"One",correct:false},{hi:"friend",en:"friend",correct:true},{hi:"is",en:"is",correct:false},{hi:"doctor",en:"doctor",correct:false}] },
+  { day:5, subject:"english", qno:8, hindi:"रिक्त: She is married ___ him.", english:"Fill: She is married ___ him.", options:[{hi:"with",en:"with",correct:false},{hi:"to",en:"to",correct:true},{hi:"for",en:"for",correct:false},{hi:"by",en:"by",correct:false}] },
+  { day:5, subject:"english", qno:9, hindi:"\"Famous\" का विलोम?", english:"Antonym of \"Famous\"", options:[{hi:"Popular",en:"Popular",correct:false},{hi:"Unknown",en:"Unknown",correct:true},{hi:"Great",en:"Great",correct:false},{hi:"Big",en:"Big",correct:false}] },
+  { day:5, subject:"english", qno:10, hindi:"रिक्त: He is ___ honest man.", english:"Fill: He is ___ honest man.", options:[{hi:"a",en:"a",correct:false},{hi:"an",en:"an",correct:true},{hi:"the",en:"the",correct:false},{hi:"none",en:"none",correct:false}] },
+
+  /* ============================================================
+     DAY 6
+     ============================================================ */
+  /* DAY 6 - REASONING */
+  { day:6, subject:"reasoning", qno:1, hindi:"अगली संख्या: 11, 13, 17, 19, 23, ?", english:"Next: 11, 13, 17, 19, 23, ?", options:[{hi:"25",en:"25",correct:false},{hi:"27",en:"27",correct:false},{hi:"29",en:"29",correct:true},{hi:"31",en:"31",correct:false}] },
+  { day:6, subject:"reasoning", qno:2, hindi:"यदि CAT=24, DOG=26, तो COW=?", english:"If CAT=24, DOG=26, then COW=?", options:[{hi:"41",en:"41",correct:true},{hi:"40",en:"40",correct:false},{hi:"42",en:"42",correct:false},{hi:"43",en:"43",correct:false}] },
+  { day:6, subject:"reasoning", qno:3, hindi:"माँ, बेटे से 25 वर्ष बड़ी। 5 वर्ष बाद माँ की आयु बेटे की दोगुनी। बेटे की वर्तमान आयु?", english:"Mother 25 yrs older. After 5 yrs, mother twice son. Son's age now?", options:[{hi:"18",en:"18",correct:false},{hi:"20",en:"20",correct:true},{hi:"22",en:"22",correct:false},{hi:"24",en:"24",correct:false}] },
+  { day:6, subject:"reasoning", qno:4, hindi:"5 किमी उत्तर, 3 किमी पूर्व, 5 किमी दक्षिण। प्रारंभ से दूरी?", english:"5N, 3E, 5S. Distance from start?", options:[{hi:"3 किमी",en:"3 km",correct:true},{hi:"5 किमी",en:"5 km",correct:false},{hi:"8 किमी",en:"8 km",correct:false},{hi:"13 किमी",en:"13 km",correct:false}] },
+  { day:6, subject:"reasoning", qno:5, hindi:"विषम: 2, 4, 6, 7, 8", english:"Odd: 2, 4, 6, 7, 8", options:[{hi:"2",en:"2",correct:false},{hi:"4",en:"4",correct:false},{hi:"6",en:"6",correct:false},{hi:"7",en:"7",correct:true}] },
+  { day:6, subject:"reasoning", qno:6, hindi:"दिन : रात :: सूर्य : ?", english:"Day : Night :: Sun : ?", options:[{hi:"चाँद",en:"Moon",correct:true},{hi:"तारा",en:"Star",correct:false},{hi:"आकाश",en:"Sky",correct:false},{hi:"बादल",en:"Cloud",correct:false}] },
+  { day:6, subject:"reasoning", qno:7, hindi:"पंक्ति 25, बाएँ से 10वाँ। दाएँ से?", english:"25 in row, 10th from left. From right?", options:[{hi:"14",en:"14",correct:false},{hi:"15",en:"15",correct:false},{hi:"16",en:"16",correct:true},{hi:"17",en:"17",correct:false}] },
+  { day:6, subject:"reasoning", qno:8, hindi:"यदि 5+3=28, 9+1=810, तो 7+2=?", english:"If 5+3=28, 9+1=810, then 7+2=?", options:[{hi:"59",en:"59",correct:true},{hi:"95",en:"95",correct:false},{hi:"514",en:"514",correct:false},{hi:"145",en:"145",correct:false}] },
+  { day:6, subject:"reasoning", qno:9, hindi:"2, 3, 5, 7, 11, 13, ?", english:"2, 3, 5, 7, 11, 13, ?", options:[{hi:"15",en:"15",correct:false},{hi:"16",en:"16",correct:false},{hi:"17",en:"17",correct:true},{hi:"19",en:"19",correct:false}] },
+  { day:6, subject:"reasoning", qno:10, hindi:"घन के कितने शीर्ष?", english:"How many vertices in cube?", options:[{hi:"6",en:"6",correct:false},{hi:"8",en:"8",correct:true},{hi:"10",en:"10",correct:false},{hi:"12",en:"12",correct:false}] },
+  /* DAY 6 - GK */
+  { day:6, subject:"gk", qno:1, hindi:"सबसे बड़ा राज्य (क्षेत्रफल)?", english:"Largest state by area?", options:[{hi:"MP",en:"MP",correct:false},{hi:"राजस्थान",en:"Rajasthan",correct:true},{hi:"महाराष्ट्र",en:"Maharashtra",correct:false},{hi:"UP",en:"UP",correct:false}] },
+  { day:6, subject:"gk", qno:2, hindi:"भारत छोड़ो आंदोलन कब?", english:"Quit India Movement year?", options:[{hi:"1940",en:"1940",correct:false},{hi:"1942",en:"1942",correct:true},{hi:"1945",en:"1945",correct:false},{hi:"1947",en:"1947",correct:false}] },
+  { day:6, subject:"gk", qno:3, hindi:"वायुमंडल में सबसे अधिक गैस?", english:"Most abundant gas in atmosphere?", options:[{hi:"O2",en:"O2",correct:false},{hi:"N2",en:"N2",correct:true},{hi:"CO2",en:"CO2",correct:false},{hi:"H2",en:"H2",correct:false}] },
+  { day:6, subject:"gk", qno:4, hindi:"भारतीय संविधान कब लागू?", english:"Constitution came into force?", options:[{hi:"26 Jan 1950",en:"26 Jan 1950",correct:true},{hi:"15 Aug 1947",en:"15 Aug 1947",correct:false},{hi:"26 Nov 1949",en:"26 Nov 1949",correct:false},{hi:"2 Oct 1950",en:"2 Oct 1950",correct:false}] },
+  { day:6, subject:"gk", qno:5, hindi:"सबसे लंबी नदी (विश्व)?", english:"Longest river in world?", options:[{hi:"अमेज़न",en:"Amazon",correct:false},{hi:"नील",en:"Nile",correct:true},{hi:"यांग्त्ज़े",en:"Yangtze",correct:false},{hi:"मिसिसिपी",en:"Mississippi",correct:false}] },
+  { day:6, subject:"gk", qno:6, hindi:"कंप्यूटर का मस्तिष्क?", english:"Brain of computer?", options:[{hi:"RAM",en:"RAM",correct:false},{hi:"CPU",en:"CPU",correct:true},{hi:"HDD",en:"HDD",correct:false},{hi:"Monitor",en:"Monitor",correct:false}] },
+  { day:6, subject:"gk", qno:7, hindi:"ओलंपिक 2024 कहाँ?", english:"Olympics 2024 held at?", options:[{hi:"टोक्यो",en:"Tokyo",correct:false},{hi:"पेरिस",en:"Paris",correct:true},{hi:"लंदन",en:"London",correct:false},{hi:"रियो",en:"Rio",correct:false}] },
+  { day:6, subject:"gk", qno:8, hindi:"भारतीय रेल की स्थापना?", english:"Indian Railways started in?", options:[{hi:"1850",en:"1850",correct:false},{hi:"1853",en:"1853",correct:true},{hi:"1860",en:"1860",correct:false},{hi:"1870",en:"1870",correct:false}] },
+  { day:6, subject:"gk", qno:9, hindi:"सूर्य का मुख्य गैस?", english:"Main gas in Sun?", options:[{hi:"O2",en:"O2",correct:false},{hi:"H2",en:"H2",correct:true},{hi:"He",en:"He",correct:false},{hi:"CO2",en:"CO2",correct:false}] },
+  { day:6, subject:"gk", qno:10, hindi:"भारत का पहला राष्ट्रपति?", english:"First President of India?", options:[{hi:"नेहरू",en:"Nehru",correct:false},{hi:"राजेंद्र प्रसाद",en:"Rajendra Prasad",correct:true},{hi:"राधाकृष्णन",en:"Radhakrishnan",correct:false},{hi:"जाकिर हुसैन",en:"Zakir Hussain",correct:false}] },
+  /* DAY 6 - MATH */
+  { day:6, subject:"math", qno:1, hindi:"₹400 का 25% = ?", english:"25% of ₹400 = ?", options:[{hi:"₹80",en:"₹80",correct:false},{hi:"₹100",en:"₹100",correct:true},{hi:"₹120",en:"₹120",correct:false},{hi:"₹150",en:"₹150",correct:false}] },
+  { day:6, subject:"math", qno:2, hindi:"SI ₹1000 पर 5% 4 वर्ष?", english:"SI on ₹1000 at 5% for 4 yrs?", options:[{hi:"₹100",en:"₹100",correct:false},{hi:"₹200",en:"₹200",correct:true},{hi:"₹300",en:"₹300",correct:false},{hi:"₹400",en:"₹400",correct:false}] },
+  { day:6, subject:"math", qno:3, hindi:"CP=₹800, SP=₹1000. Profit%?", english:"CP=₹800, SP=₹1000. Profit%?", options:[{hi:"20%",en:"20%",correct:false},{hi:"25%",en:"25%",correct:true},{hi:"30%",en:"30%",correct:false},{hi:"35%",en:"35%",correct:false}] },
+  { day:6, subject:"math", qno:4, hindi:"औसत: 5, 10, 15, 20, 25", english:"Average of 5,10,15,20,25", options:[{hi:"12",en:"12",correct:false},{hi:"14",en:"14",correct:false},{hi:"15",en:"15",correct:true},{hi:"16",en:"16",correct:false}] },
+  { day:6, subject:"math", qno:5, hindi:"कार 80 किमी/घंटा, 5 घंटे दूरी?", english:"Car 80 km/h, distance in 5h?", options:[{hi:"300",en:"300",correct:false},{hi:"350",en:"350",correct:false},{hi:"400",en:"400",correct:true},{hi:"450",en:"450",correct:false}] },
+  { day:6, subject:"math", qno:6, hindi:"5 पुरुष 6 दिन, 10 पुरुष कितने?", english:"5 men 6 days, 10 men how many?", options:[{hi:"2",en:"2",correct:false},{hi:"3",en:"3",correct:true},{hi:"4",en:"4",correct:false},{hi:"5",en:"5",correct:false}] },
+  { day:6, subject:"math", qno:7, hindi:"आयत 15×8, क्षेत्रफल?", english:"Rectangle 15×8, area?", options:[{hi:"110",en:"110",correct:false},{hi:"120",en:"120",correct:true},{hi:"130",en:"130",correct:false},{hi:"140",en:"140",correct:false}] },
+  { day:6, subject:"math", qno:8, hindi:"2:3 :: 10:?", english:"2:3 :: 10:?", options:[{hi:"12",en:"12",correct:false},{hi:"15",en:"15",correct:true},{hi:"18",en:"18",correct:false},{hi:"20",en:"20",correct:false}] },
+  { day:6, subject:"math", qno:9, hindi:"1.5 × 2 = ?", english:"1.5 × 2 = ?", options:[{hi:"2",en:"2",correct:false},{hi:"2.5",en:"2.5",correct:false},{hi:"3",en:"3",correct:true},{hi:"3.5",en:"3.5",correct:false}] },
+  { day:6, subject:"math", qno:10, hindi:"₹500 पर 10% छूट?", english:"10% discount on ₹500?", options:[{hi:"₹400",en:"₹400",correct:false},{hi:"₹450",en:"₹450",correct:true},{hi:"₹475",en:"₹475",correct:false},{hi:"₹425",en:"₹425",correct:false}] },
+  /* DAY 6 - ENGLISH */
+  { day:6, subject:"english", qno:1, hindi:"\"Begin\" का पर्यायवाची?", english:"Synonym of \"Begin\"", options:[{hi:"End",en:"End",correct:false},{hi:"Start",en:"Start",correct:true},{hi:"Stop",en:"Stop",correct:false},{hi:"Close",en:"Close",correct:false}] },
+  { day:6, subject:"english", qno:2, hindi:"\"Arrive\" का विलोम?", english:"Antonym of \"Arrive\"", options:[{hi:"Come",en:"Come",correct:false},{hi:"Depart",en:"Depart",correct:true},{hi:"Reach",en:"Reach",correct:false},{hi:"Enter",en:"Enter",correct:false}] },
+  { day:6, subject:"english", qno:3, hindi:"रिक्त: She is good ___ English.", english:"Fill: She is good ___ English.", options:[{hi:"in",en:"in",correct:false},{hi:"at",en:"at",correct:true},{hi:"on",en:"on",correct:false},{hi:"for",en:"for",correct:false}] },
+  { day:6, subject:"english", qno:4, hindi:"मुहावरा: \"Piece of cake\"?", english:"Idiom: \"Piece of cake\"?", options:[{hi:"मुश्किल",en:"Difficult",correct:false},{hi:"आसान",en:"Very easy",correct:true},{hi:"मीठा",en:"Sweet",correct:false},{hi:"केक",en:"Cake",correct:false}] },
+  { day:6, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Succesful",en:"Succesful",correct:false},{hi:"Successful",en:"Successful",correct:true},{hi:"Successfull",en:"Successfull",correct:false},{hi:"Sucessful",en:"Sucessful",correct:false}] },
+  { day:6, subject:"english", qno:6, hindi:"एक शब्द: जो भाषाएँ जानता है", english:"One-word: Knows many languages", options:[{hi:"Linguist",en:"Linguist",correct:true},{hi:"Grammarian",en:"Grammarian",correct:false},{hi:"Orator",en:"Orator",correct:false},{hi:"Writer",en:"Writer",correct:false}] },
+  { day:6, subject:"english", qno:7, hindi:"त्रुटि: The furnitures are new.", english:"Error: The furnitures are new.", options:[{hi:"The",en:"The",correct:false},{hi:"furnitures",en:"furnitures",correct:true},{hi:"are",en:"are",correct:false},{hi:"new",en:"new",correct:false}] },
+  { day:6, subject:"english", qno:8, hindi:"रिक्त: Wait ___ me.", english:"Fill: Wait ___ me.", options:[{hi:"for",en:"for",correct:true},{hi:"at",en:"at",correct:false},{hi:"on",en:"on",correct:false},{hi:"with",en:"with",correct:false}] },
+  { day:6, subject:"english", qno:9, hindi:"\"Beautiful\" का विलोम?", english:"Antonym of \"Beautiful\"", options:[{hi:"Pretty",en:"Pretty",correct:false},{hi:"Ugly",en:"Ugly",correct:true},{hi:"Nice",en:"Nice",correct:false},{hi:"Lovely",en:"Lovely",correct:false}] },
+  { day:6, subject:"english", qno:10, hindi:"रिक्त: He is ___ MBA.", english:"Fill: He is ___ MBA.", options:[{hi:"a",en:"a",correct:false},{hi:"an",en:"an",correct:true},{hi:"the",en:"the",correct:false},{hi:"none",en:"none",correct:false}] },
+
+  /* ============================================================
+     DAY 7
+     ============================================================ */
+  /* DAY 7 - REASONING */
+  { day:7, subject:"reasoning", qno:1, hindi:"अगली संख्या: 6, 12, 24, 48, ?", english:"Next: 6, 12, 24, 48, ?", options:[{hi:"72",en:"72",correct:false},{hi:"84",en:"84",correct:false},{hi:"96",en:"96",correct:true},{hi:"108",en:"108",correct:false}] },
+  { day:7, subject:"reasoning", qno:2, hindi:"यदि ROSE=6821, SORE=?", english:"If ROSE=6821, SORE=?", options:[{hi:"8261",en:"8261",correct:true},{hi:"8621",en:"8621",correct:false},{hi:"8126",en:"8126",correct:false},{hi:"8262",en:"8262",correct:false}] },
+  { day:7, subject:"reasoning", qno:3, hindi:"A, B का पिता। B, C की बहन। C, D का पिता। A, D से?", english:"A father of B. B sister of C. C father of D. A related to D?", options:[{hi:"दादा",en:"Grandfather",correct:true},{hi:"पिता",en:"Father",correct:false},{hi:"चाचा",en:"Uncle",correct:false},{hi:"भाई",en:"Brother",correct:false}] },
+  { day:7, subject:"reasoning", qno:4, hindi:"उत्तर, 45° दाएँ, 45° बाएँ। दिशा?", english:"North, 45° right, 45° left. Direction?", options:[{hi:"पूर्व",en:"East",correct:false},{hi:"उत्तर",en:"North",correct:true},{hi:"पश्चिम",en:"West",correct:false},{hi:"दक्षिण",en:"South",correct:false}] },
+  { day:7, subject:"reasoning", qno:5, hindi:"विषम: 121, 144, 169, 196, 221", english:"Odd: 121,144,169,196,221", options:[{hi:"121",en:"121",correct:false},{hi:"144",en:"144",correct:false},{hi:"196",en:"196",correct:false},{hi:"221",en:"221",correct:true}] },
+  { day:7, subject:"reasoning", qno:6, hindi:"शिक्षक : छात्र :: डॉक्टर : ?", english:"Teacher : Student :: Doctor : ?", options:[{hi:"नर्स",en:"Nurse",correct:false},{hi:"रोगी",en:"Patient",correct:true},{hi:"अस्पताल",en:"Hospital",correct:false},{hi:"दवा",en:"Medicine",correct:false}] },
+  { day:7, subject:"reasoning", qno:7, hindi:"40 लोग, राम 15वाँ बाएँ। दाएँ से?", english:"40 people, Ram 15th left. From right?", options:[{hi:"25",en:"25",correct:false},{hi:"26",en:"26",correct:true},{hi:"27",en:"27",correct:false},{hi:"24",en:"24",correct:false}] },
+  { day:7, subject:"reasoning", qno:8, hindi:"यदि + ×, × -, - +, तो 6 + 2 × 3 - 1 = ?", english:"If + ×, × -, - +, then 6 + 2 × 3 - 1 = ?", options:[{hi:"13",en:"13",correct:false},{hi:"14",en:"14",correct:true},{hi:"15",en:"15",correct:false},{hi:"16",en:"16",correct:false}] },
+  { day:7, subject:"reasoning", qno:9, hindi:"अगली: 3, 6, 11, 18, ?", english:"Next: 3, 6, 11, 18, ?", options:[{hi:"25",en:"25",correct:false},{hi:"26",en:"26",correct:false},{hi:"27",en:"27",correct:true},{hi:"28",en:"28",correct:false}] },
+  { day:7, subject:"reasoning", qno:10, hindi:"पंचभुज के कितने कोण?", english:"How many angles in pentagon?", options:[{hi:"4",en:"4",correct:false},{hi:"5",en:"5",correct:true},{hi:"6",en:"6",correct:false},{hi:"7",en:"7",correct:false}] },
+  /* DAY 7 - GK */
+  { day:7, subject:"gk", qno:1, hindi:"भारत का राष्ट्रीय खेल?", english:"National game of India?", options:[{hi:"क्रिकेट",en:"Cricket",correct:false},{hi:"हॉकी",en:"Hockey",correct:true},{hi:"कबड्डी",en:"Kabaddi",correct:false},{hi:"फुटबॉल",en:"Football",correct:false}] },
+  { day:7, subject:"gk", qno:2, hindi:"महात्मा गांधी की हत्या कब?", english:"Gandhi assassinated on?", options:[{hi:"30 Jan 1948",en:"30 Jan 1948",correct:true},{hi:"15 Aug 1947",en:"15 Aug 1947",correct:false},{hi:"26 Jan 1950",en:"26 Jan 1950",correct:false},{hi:"2 Oct 1948",en:"2 Oct 1948",correct:false}] },
+  { day:7, subject:"gk", qno:3, hindi:"सबसे बड़ा महाद्वीप?", english:"Largest continent?", options:[{hi:"अफ्रीका",en:"Africa",correct:false},{hi:"एशिया",en:"Asia",correct:true},{hi:"यूरोप",en:"Europe",correct:false},{hi:"अमेरिका",en:"America",correct:false}] },
+  { day:7, subject:"gk", qno:4, hindi:"भारत में कितने राज्य?", english:"How many states in India?", options:[{hi:"27",en:"27",correct:false},{hi:"28",en:"28",correct:true},{hi:"29",en:"29",correct:false},{hi:"30",en:"30",correct:false}] },
+  { day:7, subject:"gk", qno:5, hindi:"विश्व पर्यावरण दिवस?", english:"World Environment Day?", options:[{hi:"5 जून",en:"5 June",correct:true},{hi:"5 जुलाई",en:"5 July",correct:false},{hi:"22 अप्रैल",en:"22 April",correct:false},{hi:"16 सित",en:"16 Sep",correct:false}] },
+  { day:7, subject:"gk", qno:6, hindi:"सबसे बड़ा ग्रह?", english:"Largest planet?", options:[{hi:"पृथ्वी",en:"Earth",correct:false},{hi:"बृहस्पति",en:"Jupiter",correct:true},{hi:"शनि",en:"Saturn",correct:false},{hi:"यूरेनस",en:"Uranus",correct:false}] },
+  { day:7, subject:"gk", qno:7, hindi:"भारत का राष्ट्रीय पेड़?", english:"National tree of India?", options:[{hi:"पीपल",en:"Peepal",correct:false},{hi:"बरगद",en:"Banyan",correct:true},{hi:"नीम",en:"Neem",correct:false},{hi:"आम",en:"Mango",correct:false}] },
+  { day:7, subject:"gk", qno:8, hindi:"ISRO का मुख्यालय?", english:"ISRO headquarters?", options:[{hi:"दिल्ली",en:"Delhi",correct:false},{hi:"बेंगलुरु",en:"Bengaluru",correct:true},{hi:"मुंबई",en:"Mumbai",correct:false},{hi:"हैदराबाद",en:"Hyderabad",correct:false}] },
+  { day:7, subject:"gk", qno:9, hindi:"भारतीय संविधान के कितने अनुच्छेद?", english:"How many articles in Constitution?", options:[{hi:"395",en:"395",correct:false},{hi:"448",en:"448",correct:true},{hi:"450",en:"450",correct:false},{hi:"500",en:"500",correct:false}] },
+  { day:7, subject:"gk", qno:10, hindi:"सबसे लंबा स्तनपायी?", english:"Largest mammal?", options:[{hi:"हाथी",en:"Elephant",correct:false},{hi:"ब्लू व्हेल",en:"Blue Whale",correct:true},{hi:"जिराफ",en:"Giraffe",correct:false},{hi:"शेर",en:"Lion",correct:false}] },
+  /* DAY 7 - MATH */
+  { day:7, subject:"math", qno:1, hindi:"₹600 का 15% = ?", english:"15% of ₹600 = ?", options:[{hi:"₹80",en:"₹80",correct:false},{hi:"₹90",en:"₹90",correct:true},{hi:"₹100",en:"₹100",correct:false},{hi:"₹110",en:"₹110",correct:false}] },
+  { day:7, subject:"math", qno:2, hindi:"SI ₹3000 पर 6% 2 वर्ष?", english:"SI ₹3000 at 6% for 2 yrs?", options:[{hi:"₹300",en:"₹300",correct:false},{hi:"₹360",en:"₹360",correct:true},{hi:"₹380",en:"₹380",correct:false},{hi:"₹420",en:"₹420",correct:false}] },
+  { day:7, subject:"math", qno:3, hindi:"CP=₹400, SP=₹500. Profit%?", english:"CP=₹400, SP=₹500. Profit%?", options:[{hi:"20%",en:"20%",correct:false},{hi:"25%",en:"25%",correct:true},{hi:"30%",en:"30%",correct:false},{hi:"35%",en:"35%",correct:false}] },
+  { day:7, subject:"math", qno:4, hindi:"औसत: 20, 25, 30, 35, 40", english:"Average: 20,25,30,35,40", options:[{hi:"28",en:"28",correct:false},{hi:"29",en:"29",correct:false},{hi:"30",en:"30",correct:true},{hi:"31",en:"31",correct:false}] },
+  { day:7, subject:"math", qno:5, hindi:"100 किमी/घंटा से 2.5 घंटे दूरी?", english:"At 100 km/h, distance in 2.5h?", options:[{hi:"200",en:"200",correct:false},{hi:"225",en:"225",correct:false},{hi:"250",en:"250",correct:true},{hi:"275",en:"275",correct:false}] },
+  { day:7, subject:"math", qno:6, hindi:"A=15 दिन, B=10 दिन। साथ में?", english:"A=15 days, B=10 days. Together?", options:[{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:true},{hi:"7",en:"7",correct:false},{hi:"8",en:"8",correct:false}] },
+  { day:7, subject:"math", qno:7, hindi:"त्रिभुज क्षेत्रफल: आधार 10, ऊँचाई 6", english:"Triangle area: base 10, height 6", options:[{hi:"30",en:"30",correct:true},{hi:"40",en:"40",correct:false},{hi:"50",en:"50",correct:false},{hi:"60",en:"60",correct:false}] },
+  { day:7, subject:"math", qno:8, hindi:"4:5 :: 20:?", english:"4:5 :: 20:?", options:[{hi:"22",en:"22",correct:false},{hi:"24",en:"24",correct:false},{hi:"25",en:"25",correct:true},{hi:"30",en:"30",correct:false}] },
+  { day:7, subject:"math", qno:9, hindi:"3/4 × 8 = ?", english:"3/4 × 8 = ?", options:[{hi:"4",en:"4",correct:false},{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:true},{hi:"7",en:"7",correct:false}] },
+  { day:7, subject:"math", qno:10, hindi:"₹1000 पर 30% छूट?", english:"30% discount on ₹1000?", options:[{hi:"₹600",en:"₹600",correct:false},{hi:"₹700",en:"₹700",correct:true},{hi:"₹750",en:"₹750",correct:false},{hi:"₹800",en:"₹800",correct:false}] },
+  /* DAY 7 - ENGLISH */
+  { day:7, subject:"english", qno:1, hindi:"\"Sad\" का पर्यायवाची?", english:"Synonym of \"Sad\"", options:[{hi:"Happy",en:"Happy",correct:false},{hi:"Unhappy",en:"Unhappy",correct:true},{hi:"Glad",en:"Glad",correct:false},{hi:"Joyful",en:"Joyful",correct:false}] },
+  { day:7, subject:"english", qno:2, hindi:"\"Always\" का विलोम?", english:"Antonym of \"Always\"", options:[{hi:"Forever",en:"Forever",correct:false},{hi:"Never",en:"Never",correct:true},{hi:"Often",en:"Often",correct:false},{hi:"Sometimes",en:"Sometimes",correct:false}] },
+  { day:7, subject:"english", qno:3, hindi:"रिक्त: Depend ___ me.", english:"Fill: Depend ___ me.", options:[{hi:"on",en:"on",correct:true},{hi:"at",en:"at",correct:false},{hi:"to",en:"to",correct:false},{hi:"with",en:"with",correct:false}] },
+  { day:7, subject:"english", qno:4, hindi:"मुहावरा: \"Let the cat out of the bag\"?", english:"Idiom: \"Let the cat out of the bag\"?", options:[{hi:"राज खोल देना",en:"Reveal a secret",correct:true},{hi:"बिल्ली छोड़ना",en:"Release cat",correct:false},{hi:"झूठ बोलना",en:"Lie",correct:false},{hi:"बहाना बनाना",en:"Make excuse",correct:false}] },
+  { day:7, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Independance",en:"Independance",correct:false},{hi:"Independence",en:"Independence",correct:true},{hi:"Independense",en:"Independense",correct:false},{hi:"Indipendence",en:"Indipendence",correct:false}] },
+  { day:7, subject:"english", qno:6, hindi:"एक शब्द: जो फूलों का अध्ययन करता है", english:"One-word: Studies flowers", options:[{hi:"Botanist",en:"Botanist",correct:false},{hi:"Florist",en:"Florist",correct:false},{hi:"Horticulturist",en:"Horticulturist",correct:false},{hi:"Gardener",en:"Gardener",correct:false}] },
+  { day:7, subject:"english", qno:7, hindi:"त्रुटि: He is one of the best student.", english:"Error: He is one of the best student.", options:[{hi:"He",en:"He",correct:false},{hi:"one",en:"one",correct:false},{hi:"best",en:"best",correct:false},{hi:"student",en:"student",correct:true}] },
+  { day:7, subject:"english", qno:8, hindi:"रिक्त: She has been here ___ 2 hours.", english:"Fill: She has been here ___ 2 hours.", options:[{hi:"since",en:"since",correct:false},{hi:"for",en:"for",correct:true},{hi:"from",en:"from",correct:false},{hi:"by",en:"by",correct:false}] },
+  { day:7, subject:"english", qno:9, hindi:"\"Empty\" का विलोम?", english:"Antonym of \"Empty\"", options:[{hi:"Vacant",en:"Vacant",correct:false},{hi:"Full",en:"Full",correct:true},{hi:"Hollow",en:"Hollow",correct:false},{hi:"Blank",en:"Blank",correct:false}] },
+  { day:7, subject:"english", qno:10, hindi:"रिक्त: He is ___ hour late.", english:"Fill: He is ___ hour late.", options:[{hi:"a",en:"a",correct:false},{hi:"an",en:"an",correct:true},{hi:"the",en:"the",correct:false},{hi:"none",en:"none",correct:false}] },
+
+  /* ============================================================
+     DAY 8
+     ============================================================ */
+  /* DAY 8 - REASONING */
+  { day:8, subject:"reasoning", qno:1, hindi:"अगली: 4, 9, 16, 25, ?", english:"Next: 4, 9, 16, 25, ?", options:[{hi:"30",en:"30",correct:false},{hi:"36",en:"36",correct:true},{hi:"42",en:"42",correct:false},{hi:"49",en:"49",correct:false}] },
+  { day:8, subject:"reasoning", qno:2, hindi:"यदि A=2, B=4, C=6... तो DOG = ?", english:"If A=2, B=4, C=6... then DOG = ?", options:[{hi:"60",en:"60",correct:true},{hi:"62",en:"62",correct:false},{hi:"64",en:"64",correct:false},{hi:"66",en:"66",correct:false}] },
+  { day:8, subject:"reasoning", qno:3, hindi:"A, B का पुत्र। B, C की माता। C, D का पिता। D, A से?", english:"A son of B. B mother of C. C father of D. D related to A?", options:[{hi:"भतीजा/भतीजी",en:"Nephew/Niece",correct:true},{hi:"पुत्र",en:"Son",correct:false},{hi:"भाई",en:"Brother",correct:false},{hi:"चाचा",en:"Uncle",correct:false}] },
+  { day:8, subject:"reasoning", qno:4, hindi:"3 किमी उत्तर, 4 किमी पूर्व। दूरी?", english:"3 km north, 4 km east. Distance?", options:[{hi:"5 किमी",en:"5 km",correct:true},{hi:"6 किमी",en:"6 km",correct:false},{hi:"7 किमी",en:"7 km",correct:false},{hi:"8 किमी",en:"8 km",correct:false}] },
+  { day:8, subject:"reasoning", qno:5, hindi:"विषम: 100, 121, 144, 150, 169", english:"Odd: 100,121,144,150,169", options:[{hi:"100",en:"100",correct:false},{hi:"121",en:"121",correct:false},{hi:"150",en:"150",correct:true},{hi:"169",en:"169",correct:false}] },
+  { day:8, subject:"reasoning", qno:6, hindi:"पानी : प्यास :: भोजन : ?", english:"Water : Thirst :: Food : ?", options:[{hi:"भूख",en:"Hunger",correct:true},{hi:"खाना",en:"Eat",correct:false},{hi:"रसोई",en:"Kitchen",correct:false},{hi:"प्लेट",en:"Plate",correct:false}] },
+  { day:8, subject:"reasoning", qno:7, hindi:"35 लोग, राम 14वाँ बाएँ। दाएँ से?", english:"35 people, Ram 14th left. From right?", options:[{hi:"20",en:"20",correct:false},{hi:"21",en:"21",correct:false},{hi:"22",en:"22",correct:true},{hi:"23",en:"23",correct:false}] },
+  { day:8, subject:"reasoning", qno:8, hindi:"यदि 6×4=20, 7×5=24, 8×6=28, तो 9×7=?", english:"If 6×4=20, 7×5=24, 8×6=28, then 9×7=?", options:[{hi:"30",en:"30",correct:false},{hi:"32",en:"32",correct:true},{hi:"34",en:"34",correct:false},{hi:"36",en:"36",correct:false}] },
+  { day:8, subject:"reasoning", qno:9, hindi:"अगली: 20, 19, 17, 14, ?", english:"Next: 20, 19, 17, 14, ?", options:[{hi:"10",en:"10",correct:true},{hi:"11",en:"11",correct:false},{hi:"12",en:"12",correct:false},{hi:"9",en:"9",correct:false}] },
+  { day:8, subject:"reasoning", qno:10, hindi:"षट्भुज के कितने किनारे?", english:"How many sides in hexagon?", options:[{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:true},{hi:"7",en:"7",correct:false},{hi:"8",en:"8",correct:false}] },
+  /* DAY 8 - GK */
+  { day:8, subject:"gk", qno:1, hindi:"भारत का राष्ट्रीय पशु?", english:"National animal of India?", options:[{hi:"शेर",en:"Lion",correct:false},{hi:"बाघ",en:"Tiger",correct:true},{hi:"हाथी",en:"Elephant",correct:false},{hi:"मोर",en:"Peacock",correct:false}] },
+  { day:8, subject:"gk", qno:2, hindi:"भारत में सबसे बड़ा राज्य (क्षेत्र)?", english:"Largest state by area?", options:[{hi:"MP",en:"MP",correct:false},{hi:"राजस्थान",en:"Rajasthan",correct:true},{hi:"महाराष्ट्र",en:"Maharashtra",correct:false},{hi:"UP",en:"UP",correct:false}] },
+  { day:8, subject:"gk", qno:3, hindi:"सूर्य से पृथ्वी की दूरी?", english:"Distance Earth-Sun?", options:[{hi:"150 मिलियन किमी",en:"150 million km",correct:true},{hi:"100 मिलियन किमी",en:"100 million km",correct:false},{hi:"200 मिलियन किमी",en:"200 million km",correct:false},{hi:"250 मिलियन किमी",en:"250 million km",correct:false}] },
+  { day:8, subject:"gk", qno:4, hindi:"भारत के प्रथम गृह मंत्री?", english:"First Home Minister of India?", options:[{hi:"नेहरू",en:"Nehru",correct:false},{hi:"सरदार पटेल",en:"Sardar Patel",correct:true},{hi:"राजाजी",en:"Rajaji",correct:false},{hi:"मौलाना आज़ाद",en:"Maulana Azad",correct:false}] },
+  { day:8, subject:"gk", qno:5, hindi:"जल का रासायनिक सूत्र?", english:"Chemical formula of water?", options:[{hi:"H2O",en:"H2O",correct:true},{hi:"CO2",en:"CO2",correct:false},{hi:"O2",en:"O2",correct:false},{hi:"H2O2",en:"H2O2",correct:false}] },
+  { day:8, subject:"gk", qno:6, hindi:"सबसे बड़ा रेगिस्तान?", english:"Largest desert?", options:[{hi:"थार",en:"Thar",correct:false},{hi:"सहारा",en:"Sahara",correct:false},{hi:"अंटार्कटिक",en:"Antarctic",correct:true},{hi:"गोबी",en:"Gobi",correct:false}] },
+  { day:8, subject:"gk", qno:7, hindi:"भारत में हरित क्रांति के जनक?", english:"Father of Green Revolution in India?", options:[{hi:"कुरियन",en:"Kurien",correct:false},{hi:"स्वामीनाथन",en:"Swaminathan",correct:true},{hi:"बोरलॉग",en:"Borlaug",correct:false},{hi:"बोस",en:"Bose",correct:false}] },
+  { day:8, subject:"gk", qno:8, hindi:"क्रिकेट विश्व कप 2011 किसने जीता?", english:"Cricket WC 2011 winner?", options:[{hi:"श्रीलंका",en:"Sri Lanka",correct:false},{hi:"भारत",en:"India",correct:true},{hi:"ऑस्ट्रेलिया",en:"Australia",correct:false},{hi:"पाकिस्तान",en:"Pakistan",correct:false}] },
+  { day:8, subject:"gk", qno:9, hindi:"सबसे कठोर प्राकृतिक पदार्थ?", english:"Hardest natural substance?", options:[{hi:"लोहा",en:"Iron",correct:false},{hi:"हीरा",en:"Diamond",correct:true},{hi:"सोना",en:"Gold",correct:false},{hi:"ग्रेफाइट",en:"Graphite",correct:false}] },
+  { day:8, subject:"gk", qno:10, hindi:"भारत में पंचायती राज कब?", english:"Panchayati Raj in India year?", options:[{hi:"1959",en:"1959",correct:true},{hi:"1950",en:"1950",correct:false},{hi:"1965",en:"1965",correct:false},{hi:"1970",en:"1970",correct:false}] },
+  /* DAY 8 - MATH */
+  { day:8, subject:"math", qno:1, hindi:"₹1200 का 5% = ?", english:"5% of ₹1200 = ?", options:[{hi:"₹50",en:"₹50",correct:false},{hi:"₹60",en:"₹60",correct:true},{hi:"₹70",en:"₹70",correct:false},{hi:"₹80",en:"₹80",correct:false}] },
+  { day:8, subject:"math", qno:2, hindi:"SI ₹4000 पर 5% 3 वर्ष?", english:"SI ₹4000 at 5% 3 yrs?", options:[{hi:"₹400",en:"₹400",correct:false},{hi:"₹500",en:"₹500",correct:false},{hi:"₹600",en:"₹600",correct:true},{hi:"₹700",en:"₹700",correct:false}] },
+  { day:8, subject:"math", qno:3, hindi:"CP=₹900, SP=₹1000. Profit%?", english:"CP=₹900, SP=₹1000. Profit%?", options:[{hi:"10%",en:"10%",correct:false},{hi:"11.11%",en:"11.11%",correct:true},{hi:"12%",en:"12%",correct:false},{hi:"15%",en:"15%",correct:false}] },
+  { day:8, subject:"math", qno:4, hindi:"औसत: 8, 16, 24, 32", english:"Average: 8,16,24,32", options:[{hi:"16",en:"16",correct:false},{hi:"18",en:"18",correct:false},{hi:"20",en:"20",correct:true},{hi:"22",en:"22",correct:false}] },
+  { day:8, subject:"math", qno:5, hindi:"50 किमी/घंटा, 6 घंटे दूरी?", english:"50 km/h, 6h distance?", options:[{hi:"250",en:"250",correct:false},{hi:"300",en:"300",correct:true},{hi:"350",en:"350",correct:false},{hi:"400",en:"400",correct:false}] },
+  { day:8, subject:"math", qno:6, hindi:"A=20 दिन, B=30 दिन। साथ में?", english:"A=20 days, B=30 days. Together?", options:[{hi:"10",en:"10",correct:false},{hi:"12",en:"12",correct:true},{hi:"15",en:"15",correct:false},{hi:"18",en:"18",correct:false}] },
+  { day:8, subject:"math", qno:7, hindi:"घन भुजा 5, आयतन?", english:"Cube side 5, volume?", options:[{hi:"100",en:"100",correct:false},{hi:"125",en:"125",correct:true},{hi:"150",en:"150",correct:false},{hi:"175",en:"175",correct:false}] },
+  { day:8, subject:"math", qno:8, hindi:"8:12 :: 16:?", english:"8:12 :: 16:?", options:[{hi:"20",en:"20",correct:false},{hi:"22",en:"22",correct:false},{hi:"24",en:"24",correct:true},{hi:"26",en:"26",correct:false}] },
+  { day:8, subject:"math", qno:9, hindi:"2/5 × 15 = ?", english:"2/5 × 15 = ?", options:[{hi:"4",en:"4",correct:false},{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:true},{hi:"7",en:"7",correct:false}] },
+  { day:8, subject:"math", qno:10, hindi:"₹2000 पर 40% छूट?", english:"40% discount on ₹2000?", options:[{hi:"₹1000",en:"₹1000",correct:false},{hi:"₹1200",en:"₹1200",correct:true},{hi:"₹1300",en:"₹1300",correct:false},{hi:"₹1400",en:"₹1400",correct:false}] },
+  /* DAY 8 - ENGLISH */
+  { day:8, subject:"english", qno:1, hindi:"\"Big\" का पर्यायवाची?", english:"Synonym of \"Big\"", options:[{hi:"Small",en:"Small",correct:false},{hi:"Large",en:"Large",correct:true},{hi:"Tiny",en:"Tiny",correct:false},{hi:"Little",en:"Little",correct:false}] },
+  { day:8, subject:"english", qno:2, hindi:"\"Open\" का विलोम?", english:"Antonym of \"Open\"", options:[{hi:"Wide",en:"Wide",correct:false},{hi:"Close",en:"Close",correct:true},{hi:"Free",en:"Free",correct:false},{hi:"Broad",en:"Broad",correct:false}] },
+  { day:8, subject:"english", qno:3, hindi:"रिक्त: He is angry ___ me.", english:"Fill: He is angry ___ me.", options:[{hi:"on",en:"on",correct:false},{hi:"with",en:"with",correct:true},{hi:"at",en:"at",correct:false},{hi:"for",en:"for",correct:false}] },
+  { day:8, subject:"english", qno:4, hindi:"मुहावरा: \"Burn the midnight oil\"?", english:"Idiom: \"Burn the midnight oil\"?", options:[{hi:"देर रात तक पढ़ना",en:"Study late night",correct:true},{hi:"आग जलाना",en:"Light fire",correct:false},{hi:"तेल बेचना",en:"Sell oil",correct:false},{hi:"सो जाना",en:"Sleep",correct:false}] },
+  { day:8, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Embarass",en:"Embarass",correct:false},{hi:"Embarrass",en:"Embarrass",correct:true},{hi:"Embaras",en:"Embaras",correct:false},{hi:"Embarras",en:"Embarras",correct:false}] },
+  { day:8, subject:"english", qno:6, hindi:"एक शब्द: जो समाचार लिखता है", english:"One-word: Writes news", options:[{hi:"Journalist",en:"Journalist",correct:true},{hi:"Editor",en:"Editor",correct:false},{hi:"Author",en:"Author",correct:false},{hi:"Poet",en:"Poet",correct:false}] },
+  { day:8, subject:"english", qno:7, hindi:"त्रुटि: The news are good.", english:"Error: The news are good.", options:[{hi:"The",en:"The",correct:false},{hi:"news",en:"news",correct:false},{hi:"are",en:"are",correct:true},{hi:"good",en:"good",correct:false}] },
+  { day:8, subject:"english", qno:8, hindi:"रिक्त: Apply ___ the post.", english:"Fill: Apply ___ the post.", options:[{hi:"for",en:"for",correct:true},{hi:"to",en:"to",correct:false},{hi:"at",en:"at",correct:false},{hi:"on",en:"on",correct:false}] },
+  { day:8, subject:"english", qno:9, hindi:"\"Friend\" का विलोम?", english:"Antonym of \"Friend\"", options:[{hi:"Companion",en:"Companion",correct:false},{hi:"Enemy",en:"Enemy",correct:true},{hi:"Mate",en:"Mate",correct:false},{hi:"Ally",en:"Ally",correct:false}] },
+  { day:8, subject:"english", qno:10, hindi:"रिक्त: It is ___ unique book.", english:"Fill: It is ___ unique book.", options:[{hi:"a",en:"a",correct:true},{hi:"an",en:"an",correct:false},{hi:"the",en:"the",correct:false},{hi:"none",en:"none",correct:false}] },
+
+  /* ============================================================
+     DAY 9
+     ============================================================ */
+  /* DAY 9 - REASONING */
+  { day:9, subject:"reasoning", qno:1, hindi:"अगली: 1, 4, 27, 256, ?", english:"Next: 1, 4, 27, 256, ?", options:[{hi:"1024",en:"1024",correct:false},{hi:"3125",en:"3125",correct:true},{hi:"4096",en:"4096",correct:false},{hi:"2048",en:"2048",correct:false}] },
+  { day:9, subject:"reasoning", qno:2, hindi:"यदि FIGHT=8, WIN=9, तो LOSE=?", english:"If FIGHT=8, WIN=9, then LOSE=?", options:[{hi:"8",en:"8",correct:false},{hi:"9",en:"9",correct:false},{hi:"10",en:"10",correct:true},{hi:"11",en:"11",correct:false}] },
+  { day:9, subject:"reasoning", qno:3, hindi:"राम, श्याम का पिता। श्याम, गीता का भाई। गीता, सीता की माँ। राम, सीता से?", english:"Ram father of Shyam. Shyam brother of Geeta. Geeta mother of Sita. Ram related to Sita?", options:[{hi:"दादा",en:"Grandfather",correct:true},{hi:"पिता",en:"Father",correct:false},{hi:"चाचा",en:"Uncle",correct:false},{hi:"भाई",en:"Brother",correct:false}] },
+  { day:9, subject:"reasoning", qno:4, hindi:"पूर्व 5, उत्तर 12। दूरी?", english:"East 5, North 12. Distance?", options:[{hi:"13",en:"13",correct:true},{hi:"15",en:"15",correct:false},{hi:"17",en:"17",correct:false},{hi:"10",en:"10",correct:false}] },
+  { day:9, subject:"reasoning", qno:5, hindi:"विषम: 3, 5, 7, 11, 15", english:"Odd: 3,5,7,11,15", options:[{hi:"3",en:"3",correct:false},{hi:"5",en:"5",correct:false},{hi:"11",en:"11",correct:false},{hi:"15",en:"15",correct:true}] },
+  { day:9, subject:"reasoning", qno:6, hindi:"पुस्तक : पठन :: भोजन : ?", english:"Book : Reading :: Food : ?", options:[{hi:"पकाना",en:"Cooking",correct:false},{hi:"खाना",en:"Eating",correct:true},{hi:"खरीदना",en:"Buying",correct:false},{hi:"बेचना",en:"Selling",correct:false}] },
+  { day:9, subject:"reasoning", qno:7, hindi:"45 लोग, मोहन 20वाँ बाएँ। दाएँ से?", english:"45 people, Mohan 20th left. From right?", options:[{hi:"25",en:"25",correct:false},{hi:"26",en:"26",correct:true},{hi:"27",en:"27",correct:false},{hi:"28",en:"28",correct:false}] },
+  { day:9, subject:"reasoning", qno:8, hindi:"यदि 3$4=19, 5$6=41, तो 7$8=?", english:"If 3$4=19, 5$6=41, then 7$8=?", options:[{hi:"67",en:"67",correct:false},{hi:"71",en:"71",correct:true},{hi:"73",en:"73",correct:false},{hi:"75",en:"75",correct:false}] },
+  { day:9, subject:"reasoning", qno:9, hindi:"अगली: 81, 64, 49, 36, ?", english:"Next: 81, 64, 49, 36, ?", options:[{hi:"25",en:"25",correct:true},{hi:"27",en:"27",correct:false},{hi:"29",en:"29",correct:false},{hi:"30",en:"30",correct:false}] },
+  { day:9, subject:"reasoning", qno:10, hindi:"समबाहु त्रिभुज के कोण?", english:"Angles in equilateral triangle?", options:[{hi:"30°",en:"30°",correct:false},{hi:"45°",en:"45°",correct:false},{hi:"60°",en:"60°",correct:true},{hi:"90°",en:"90°",correct:false}] },
+  /* DAY 9 - GK */
+  { day:9, subject:"gk", qno:1, hindi:"भारत का राष्ट्रीय फल?", english:"National fruit of India?", options:[{hi:"सेब",en:"Apple",correct:false},{hi:"आम",en:"Mango",correct:true},{hi:"केला",en:"Banana",correct:false},{hi:"संतरा",en:"Orange",correct:false}] },
+  { day:9, subject:"gk", qno:2, hindi:"सबसे लंबी नदी (भारत)?", english:"Longest river in India?", options:[{hi:"गोदावरी",en:"Godavari",correct:false},{hi:"गंगा",en:"Ganga",correct:true},{hi:"यमुना",en:"Yamuna",correct:false},{hi:"ब्रह्मपुत्र",en:"Brahmaputra",correct:false}] },
+  { day:9, subject:"gk", qno:3, hindi:"भारतीय संविधान के जनक?", english:"Father of Indian Constitution?", options:[{hi:"नेहरू",en:"Nehru",correct:false},{hi:"आंबेडकर",en:"Ambedkar",correct:true},{hi:"गांधी",en:"Gandhi",correct:false},{hi:"पटेल",en:"Patel",correct:false}] },
+  { day:9, subject:"gk", qno:4, hindi:"भारत में सबसे बड़ा राज्य (जनसंख्या)?", english:"Most populous state?", options:[{hi:"MP",en:"MP",correct:false},{hi:"UP",en:"UP",correct:true},{hi:"बिहार",en:"Bihar",correct:false},{hi:"महाराष्ट्र",en:"Maharashtra",correct:false}] },
+  { day:9, subject:"gk", qno:5, hindi:"सबसे छोटा महाद्वीप?", english:"Smallest continent?", options:[{hi:"यूरोप",en:"Europe",correct:false},{hi:"ऑस्ट्रेलिया",en:"Australia",correct:true},{hi:"अंटार्कटिक",en:"Antarctica",correct:false},{hi:"अफ्रीका",en:"Africa",correct:false}] },
+  { day:9, subject:"gk", qno:6, hindi:"चंद्रमा पर पहला व्यक्ति?", english:"First man on Moon?", options:[{hi:"बज़ एल्ड्रिन",en:"Buzz Aldrin",correct:false},{hi:"नील आर्मस्ट्रांग",en:"Neil Armstrong",correct:true},{hi:"यूरी गागरिन",en:"Yuri Gagarin",correct:false},{hi:"माइकल कोलिन्स",en:"Michael Collins",correct:false}] },
+  { day:9, subject:"gk", qno:7, hindi:"भारत का सबसे बड़ा राज्य (क्षेत्र)?", english:"Largest state by area?", options:[{hi:"राजस्थान",en:"Rajasthan",correct:true},{hi:"MP",en:"MP",correct:false},{hi:"महाराष्ट्र",en:"Maharashtra",correct:false},{hi:"UP",en:"UP",correct:false}] },
+  { day:9, subject:"gk", qno:8, hindi:"भारतीय संविधान कितने अनुच्छेद?", english:"Constitution articles?", options:[{hi:"395",en:"395",correct:false},{hi:"448",en:"448",correct:true},{hi:"450",en:"450",correct:false},{hi:"500",en:"500",correct:false}] },
+  { day:9, subject:"gk", qno:9, hindi:"सबसे बड़ी हड्डी?", english:"Longest bone?", options:[{hi:"फीमर",en:"Femur",correct:true},{hi:"टिबिया",en:"Tibia",correct:false},{hi:"ह्यूमरस",en:"Humerus",correct:false},{hi:"फिबुला",en:"Fibula",correct:false}] },
+  { day:9, subject:"gk", qno:10, hindi:"भारत की राजधानी?", english:"Capital of India?", options:[{hi:"मुंबई",en:"Mumbai",correct:false},{hi:"नई दिल्ली",en:"New Delhi",correct:true},{hi:"कोलकाता",en:"Kolkata",correct:false},{hi:"चेन्नई",en:"Chennai",correct:false}] },
+  /* DAY 9 - MATH */
+  { day:9, subject:"math", qno:1, hindi:"₹200 का 30% = ?", english:"30% of ₹200 = ?", options:[{hi:"₹40",en:"₹40",correct:false},{hi:"₹60",en:"₹60",correct:true},{hi:"₹80",en:"₹80",correct:false},{hi:"₹100",en:"₹100",correct:false}] },
+  { day:9, subject:"math", qno:2, hindi:"SI ₹1500 पर 8% 2 वर्ष?", english:"SI ₹1500 at 8% 2 yrs?", options:[{hi:"₹200",en:"₹200",correct:false},{hi:"₹240",en:"₹240",correct:true},{hi:"₹280",en:"₹280",correct:false},{hi:"₹300",en:"₹300",correct:false}] },
+  { day:9, subject:"math", qno:3, hindi:"CP=₹1200, SP=₹1000. Loss%?", english:"CP=₹1200, SP=₹1000. Loss%?", options:[{hi:"10%",en:"10%",correct:false},{hi:"16.67%",en:"16.67%",correct:true},{hi:"20%",en:"20%",correct:false},{hi:"25%",en:"25%",correct:false}] },
+  { day:9, subject:"math", qno:4, hindi:"औसत: 10, 20, 30, 40", english:"Average: 10,20,30,40", options:[{hi:"20",en:"20",correct:false},{hi:"25",en:"25",correct:true},{hi:"30",en:"30",correct:false},{hi:"35",en:"35",correct:false}] },
+  { day:9, subject:"math", qno:5, hindi:"कार 60 किमी/घंटा, 4 घंटे दूरी?", english:"Car 60 km/h, 4h distance?", options:[{hi:"180",en:"180",correct:false},{hi:"220",en:"220",correct:false},{hi:"240",en:"240",correct:true},{hi:"260",en:"260",correct:false}] },
+  { day:9, subject:"math", qno:6, hindi:"A=8 दिन, B=8 दिन। साथ?", english:"A=8 days, B=8 days. Together?", options:[{hi:"2",en:"2",correct:false},{hi:"4",en:"4",correct:true},{hi:"6",en:"6",correct:false},{hi:"8",en:"8",correct:false}] },
+  { day:9, subject:"math", qno:7, hindi:"वृत्त त्रिज्या 21, क्षेत्रफल?", english:"Circle radius 21, area?", options:[{hi:"1186",en:"1186",correct:false},{hi:"1286",en:"1286",correct:false},{hi:"1386",en:"1386",correct:true},{hi:"1486",en:"1486",correct:false}] },
+  { day:9, subject:"math", qno:8, hindi:"3:4 :: 12:?", english:"3:4 :: 12:?", options:[{hi:"14",en:"14",correct:false},{hi:"15",en:"15",correct:false},{hi:"16",en:"16",correct:true},{hi:"18",en:"18",correct:false}] },
+  { day:9, subject:"math", qno:9, hindi:"5/8 - 3/8 = ?", english:"5/8 - 3/8 = ?", options:[{hi:"1/4",en:"1/4",correct:true},{hi:"1/2",en:"1/2",correct:false},{hi:"2/8",en:"2/8",correct:false},{hi:"1/8",en:"1/8",correct:false}] },
+  { day:9, subject:"math", qno:10, hindi:"₹800 पर 5% छूट?", english:"5% discount on ₹800?", options:[{hi:"₹760",en:"₹760",correct:true},{hi:"₹750",en:"₹750",correct:false},{hi:"₹740",en:"₹740",correct:false},{hi:"₹720",en:"₹720",correct:false}] },
+  /* DAY 9 - ENGLISH */
+  { day:9, subject:"english", qno:1, hindi:"\"Old\" का पर्यायवाची?", english:"Synonym of \"Old\"", options:[{hi:"New",en:"New",correct:false},{hi:"Ancient",en:"Ancient",correct:true},{hi:"Young",en:"Young",correct:false},{hi:"Fresh",en:"Fresh",correct:false}] },
+  { day:9, subject:"english", qno:2, hindi:"\"Give\" का विलोम?", english:"Antonym of \"Give\"", options:[{hi:"Donate",en:"Donate",correct:false},{hi:"Take",en:"Take",correct:true},{hi:"Offer",en:"Offer",correct:false},{hi:"Present",en:"Present",correct:false}] },
+  { day:9, subject:"english", qno:3, hindi:"रिक्त: I agree ___ you.", english:"Fill: I agree ___ you.", options:[{hi:"with",en:"with",correct:true},{hi:"to",en:"to",correct:false},{hi:"at",en:"at",correct:false},{hi:"on",en:"on",correct:false}] },
+  { day:9, subject:"english", qno:4, hindi:"मुहावरा: \"In black and white\"?", english:"Idiom: \"In black and white\"?", options:[{hi:"लिखित में",en:"In writing",correct:true},{hi:"काले-सफेद में",en:"Black & white color",correct:false},{hi:"स्पष्ट",en:"Clear",correct:false},{hi:"अंधेरे में",en:"In dark",correct:false}] },
+  { day:9, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Febuary",en:"Febuary",correct:false},{hi:"February",en:"February",correct:true},{hi:"Feburary",en:"Feburary",correct:false},{hi:"Februry",en:"Februry",correct:false}] },
+  { day:9, subject:"english", qno:6, hindi:"एक शब्द: भारत का अध्ययन", english:"One-word: Study of India", options:[{hi:"Indology",en:"Indology",correct:true},{hi:"History",en:"History",correct:false},{hi:"Geography",en:"Geography",correct:false},{hi:"Sociology",en:"Sociology",correct:false}] },
+  { day:9, subject:"english", qno:7, hindi:"त्रुटि: Each of the boys have a pen.", english:"Error: Each of the boys have a pen.", options:[{hi:"Each",en:"Each",correct:false},{hi:"boys",en:"boys",correct:false},{hi:"have",en:"have",correct:true},{hi:"pen",en:"pen",correct:false}] },
+  { day:9, subject:"english", qno:8, hindi:"रिक्त: He is capable ___ doing it.", english:"Fill: He is capable ___ doing it.", options:[{hi:"to",en:"to",correct:false},{hi:"of",en:"of",correct:true},{hi:"for",en:"for",correct:false},{hi:"in",en:"in",correct:false}] },
+  { day:9, subject:"english", qno:9, hindi:"\"Heavy\" का विलोम?", english:"Antonym of \"Heavy\"", options:[{hi:"Light",en:"Light",correct:true},{hi:"Big",en:"Big",correct:false},{hi:"Weight",en:"Weight",correct:false},{hi:"Strong",en:"Strong",correct:false}] },
+  { day:9, subject:"english", qno:10, hindi:"रिक्त: ___ apple a day keeps doctor away.", english:"Fill: ___ apple a day keeps doctor away.", options:[{hi:"A",en:"A",correct:false},{hi:"An",en:"An",correct:true},{hi:"The",en:"The",correct:false},{hi:"None",en:"None",correct:false}] },
+
+  /* ============================================================
+     DAY 10
+     ============================================================ */
+  /* DAY 10 - REASONING */
+  { day:10, subject:"reasoning", qno:1, hindi:"अगली: 2, 5, 10, 17, 26, ?", english:"Next: 2,5,10,17,26,?", options:[{hi:"35",en:"35",correct:false},{hi:"37",en:"37",correct:true},{hi:"39",en:"39",correct:false},{hi:"41",en:"41",correct:false}] },
+  { day:10, subject:"reasoning", qno:2, hindi:"यदि MAN=13, WOMAN=?, तो?", english:"If MAN=13, WOMAN=?", options:[{hi:"13",en:"13",correct:false},{hi:"14",en:"14",correct:false},{hi:"15",en:"15",correct:true},{hi:"16",en:"16",correct:false}] },
+  { day:10, subject:"reasoning", qno:3, hindi:"A, B की पत्नी। C, B की बहन। D, C का पुत्र। A, D से?", english:"A wife of B. C sister of B. D son of C. A related to D?", options:[{hi:"माँ",en:"Mother",correct:false},{hi:"चाची",en:"Aunt",correct:true},{hi:"बहन",en:"Sister",correct:false},{hi:"दादी",en:"Grandmother",correct:false}] },
+  { day:10, subject:"reasoning", qno:4, hindi:"8 किमी दक्षिण, 6 किमी पूर्व। दूरी?", english:"8 km south, 6 km east. Distance?", options:[{hi:"10",en:"10",correct:true},{hi:"12",en:"12",correct:false},{hi:"14",en:"14",correct:false},{hi:"16",en:"16",correct:false}] },
+  { day:10, subject:"reasoning", qno:5, hindi:"विषम: 11, 13, 17, 19, 21", english:"Odd: 11,13,17,19,21", options:[{hi:"11",en:"11",correct:false},{hi:"13",en:"13",correct:false},{hi:"21",en:"21",correct:true},{hi:"19",en:"19",correct:false}] },
+  { day:10, subject:"reasoning", qno:6, hindi:"सूर्य : दिन :: चंद्रमा : ?", english:"Sun : Day :: Moon : ?", options:[{hi:"रात",en:"Night",correct:true},{hi:"तारा",en:"Star",correct:false},{hi:"आकाश",en:"Sky",correct:false},{hi:"ग्रह",en:"Planet",correct:false}] },
+  { day:10, subject:"reasoning", qno:7, hindi:"50 लोग, राम 22वाँ बाएँ। दाएँ?", english:"50 people, Ram 22nd left. From right?", options:[{hi:"28",en:"28",correct:false},{hi:"29",en:"29",correct:true},{hi:"30",en:"30",correct:false},{hi:"31",en:"31",correct:false}] },
+  { day:10, subject:"reasoning", qno:8, hindi:"यदि 4%5=41, 6%7=85, तो 8%9=?", english:"If 4%5=41, 6%7=85, then 8%9=?", options:[{hi:"145",en:"145",correct:true},{hi:"135",en:"135",correct:false},{hi:"155",en:"155",correct:false},{hi:"165",en:"165",correct:false}] },
+  { day:10, subject:"reasoning", qno:9, hindi:"अगली: 1, 2, 6, 24, ?", english:"Next: 1, 2, 6, 24, ?", options:[{hi:"48",en:"48",correct:false},{hi:"96",en:"96",correct:false},{hi:"120",en:"120",correct:true},{hi:"144",en:"144",correct:false}] },
+  { day:10, subject:"reasoning", qno:10, hindi:"अष्टभुज के कितने किनारे?", english:"How many sides in octagon?", options:[{hi:"6",en:"6",correct:false},{hi:"7",en:"7",correct:false},{hi:"8",en:"8",correct:true},{hi:"9",en:"9",correct:false}] },
+  /* DAY 10 - GK */
+  { day:10, subject:"gk", qno:1, hindi:"भारत का राष्ट्रीय पक्षी?", english:"National bird of India?", options:[{hi:"कबूतर",en:"Pigeon",correct:false},{hi:"मोर",en:"Peacock",correct:true},{hi:"तोता",en:"Parrot",correct:false},{hi:"बाज",en:"Falcon",correct:false}] },
+  { day:10, subject:"gk", qno:2, hindi:"भारत का सबसे छोटा राज्य?", english:"Smallest state of India?", options:[{hi:"सिक्किम",en:"Sikkim",correct:false},{hi:"गोवा",en:"Goa",correct:true},{hi:"त्रिपुरा",en:"Tripura",correct:false},{hi:"मणिपुर",en:"Manipur",correct:false}] },
+  { day:10, subject:"gk", qno:3, hindi:"सबसे बड़ा महासागर?", english:"Largest ocean?", options:[{hi:"अटलांटिक",en:"Atlantic",correct:false},{hi:"प्रशांत",en:"Pacific",correct:true},{hi:"हिंद",en:"Indian",correct:false},{hi:"आर्कटिक",en:"Arctic",correct:false}] },
+  { day:10, subject:"gk", qno:4, hindi:"भारत की मुद्रा?", english:"Currency of India?", options:[{hi:"डॉलर",en:"Dollar",correct:false},{hi:"रुपया",en:"Rupee",correct:true},{hi:"पाउंड",en:"Pound",correct:false},{hi:"येन",en:"Yen",correct:false}] },
+  { day:10, subject:"gk", qno:5, hindi:"भारत छोड़ो आंदोलन कब?", english:"Quit India Movement?", options:[{hi:"1940",en:"1940",correct:false},{hi:"1942",en:"1942",correct:true},{hi:"1945",en:"1945",correct:false},{hi:"1947",en:"1947",correct:false}] },
+  { day:10, subject:"gk", qno:6, hindi:"ताजमहल किसने बनवाया?", english:"Who built Taj Mahal?", options:[{hi:"अकबर",en:"Akbar",correct:false},{hi:"शाहजहाँ",en:"Shah Jahan",correct:true},{hi:"औरंगजेब",en:"Aurangzeb",correct:false},{hi:"बाबर",en:"Babur",correct:false}] },
+  { day:10, subject:"gk", qno:7, hindi:"सबसे कठोर पदार्थ?", english:"Hardest substance?", options:[{hi:"लोहा",en:"Iron",correct:false},{hi:"हीरा",en:"Diamond",correct:true},{hi:"स्टील",en:"Steel",correct:false},{hi:"ग्रेफाइट",en:"Graphite",correct:false}] },
+  { day:10, subject:"gk", qno:8, hindi:"राष्ट्रीय विज्ञान दिवस?", english:"National Science Day?", options:[{hi:"28 फर",en:"28 Feb",correct:true},{hi:"15 अग",en:"15 Aug",correct:false},{hi:"5 सित",en:"5 Sep",correct:false},{hi:"14 नव",en:"14 Nov",correct:false}] },
+  { day:10, subject:"gk", qno:9, hindi:"भारतीय संविधान कब लागू?", english:"Constitution enforced?", options:[{hi:"26 जन 1950",en:"26 Jan 1950",correct:true},{hi:"15 अग 1947",en:"15 Aug 1947",correct:false},{hi:"26 नव 1949",en:"26 Nov 1949",correct:false},{hi:"2 अक्टू 1950",en:"2 Oct 1950",correct:false}] },
+  { day:10, subject:"gk", qno:10, hindi:"सबसे लंबी हड्डी?", english:"Longest bone?", options:[{hi:"फीमर",en:"Femur",correct:true},{hi:"टिबिया",en:"Tibia",correct:false},{hi:"ह्यूमरस",en:"Humerus",correct:false},{hi:"फिबुला",en:"Fibula",correct:false}] },
+  /* DAY 10 - MATH */
+  { day:10, subject:"math", qno:1, hindi:"₹400 का 40% = ?", english:"40% of ₹400 = ?", options:[{hi:"₹120",en:"₹120",correct:false},{hi:"₹140",en:"₹140",correct:false},{hi:"₹160",en:"₹160",correct:true},{hi:"₹180",en:"₹180",correct:false}] },
+  { day:10, subject:"math", qno:2, hindi:"SI ₹2500 पर 4% 2 वर्ष?", english:"SI ₹2500 at 4% 2 yrs?", options:[{hi:"₹100",en:"₹100",correct:false},{hi:"₹150",en:"₹150",correct:false},{hi:"₹200",en:"₹200",correct:true},{hi:"₹250",en:"₹250",correct:false}] },
+  { day:10, subject:"math", qno:3, hindi:"CP=₹2000, SP=₹2500. Profit%?", english:"CP=₹2000, SP=₹2500. Profit%?", options:[{hi:"20%",en:"20%",correct:false},{hi:"25%",en:"25%",correct:true},{hi:"30%",en:"30%",correct:false},{hi:"35%",en:"35%",correct:false}] },
+  { day:10, subject:"math", qno:4, hindi:"औसत: 100, 200, 300", english:"Average: 100,200,300", options:[{hi:"150",en:"150",correct:false},{hi:"200",en:"200",correct:true},{hi:"250",en:"250",correct:false},{hi:"300",en:"300",correct:false}] },
+  { day:10, subject:"math", qno:5, hindi:"120 किमी/घंटा, 2 घंटे दूरी?", english:"120 km/h, 2h distance?", options:[{hi:"180",en:"180",correct:false},{hi:"200",en:"200",correct:false},{hi:"240",en:"240",correct:true},{hi:"280",en:"280",correct:false}] },
+  { day:10, subject:"math", qno:6, hindi:"A=6, B=3। साथ में?", english:"A=6 days, B=3 days. Together?", options:[{hi:"1",en:"1",correct:false},{hi:"2",en:"2",correct:true},{hi:"3",en:"3",correct:false},{hi:"4",en:"4",correct:false}] },
+  { day:10, subject:"math", qno:7, hindi:"आयत 12×10, परिमाप?", english:"Rectangle 12×10, perimeter?", options:[{hi:"40",en:"40",correct:false},{hi:"42",en:"42",correct:false},{hi:"44",en:"44",correct:true},{hi:"46",en:"46",correct:false}] },
+  { day:10, subject:"math", qno:8, hindi:"5:8 :: 15:?", english:"5:8 :: 15:?", options:[{hi:"20",en:"20",correct:false},{hi:"22",en:"22",correct:false},{hi:"24",en:"24",correct:true},{hi:"26",en:"26",correct:false}] },
+  { day:10, subject:"math", qno:9, hindi:"7/9 × 9 = ?", english:"7/9 × 9 = ?", options:[{hi:"5",en:"5",correct:false},{hi:"6",en:"6",correct:false},{hi:"7",en:"7",correct:true},{hi:"8",en:"8",correct:false}] },
+  { day:10, subject:"math", qno:10, hindi:"₹500 पर 20% + 5% छूट?", english:"₹500 with 20% + 5% discount?", options:[{hi:"₹360",en:"₹360",correct:false},{hi:"₹380",en:"₹380",correct:true},{hi:"₹400",en:"₹400",correct:false},{hi:"₹420",en:"₹420",correct:false}] },
+  /* DAY 10 - ENGLISH */
+  { day:10, subject:"english", qno:1, hindi:"\"Beautiful\" का पर्यायवाची?", english:"Synonym of \"Beautiful\"", options:[{hi:"Ugly",en:"Ugly",correct:false},{hi:"Pretty",en:"Pretty",correct:true},{hi:"Plain",en:"Plain",correct:false},{hi:"Dull",en:"Dull",correct:false}] },
+  { day:10, subject:"english", qno:2, hindi:"\"Ancient\" का विलोम?", english:"Antonym of \"Ancient\"", options:[{hi:"Old",en:"Old",correct:false},{hi:"Modern",en:"Modern",correct:true},{hi:"Antique",en:"Antique",correct:false},{hi:"Past",en:"Past",correct:false}] },
+  { day:10, subject:"english", qno:3, hindi:"रिक्त: Proud ___ me.", english:"Fill: Proud ___ me.", options:[{hi:"of",en:"of",correct:true},{hi:"at",en:"at",correct:false},{hi:"on",en:"on",correct:false},{hi:"with",en:"with",correct:false}] },
+  { day:10, subject:"english", qno:4, hindi:"मुहावरा: \"Hit the books\"?", english:"Idiom: \"Hit the books\"?", options:[{hi:"किताबें मारना",en:"Hit books",correct:false},{hi:"जमकर पढ़ना",en:"Study hard",correct:true},{hi:"किताबें खरीदना",en:"Buy books",correct:false},{hi:"किताबें बेचना",en:"Sell books",correct:false}] },
+  { day:10, subject:"english", qno:5, hindi:"सही वर्तनी?", english:"Correct spelling?", options:[{hi:"Priviledge",en:"Priviledge",correct:false},{hi:"Privilege",en:"Privilege",correct:true},{hi:"Privilage",en:"Privilage",correct:false},{hi:"Privilige",en:"Privilige",correct:false}] },
+  { day:10, subject:"english", qno:6, hindi:"एक शब्द: जो समय पर नहीं पहुँचता", english:"One-word: Not on time", options:[{hi:"Late",en:"Late",correct:false},{hi:"Punctual",en:"Punctual",correct:false},{hi:"Tardy",en:"Tardy",correct:true},{hi:"Early",en:"Early",correct:false}] },
+  { day:10, subject:"english", qno:7, hindi:"त्रुटि: He prefer coffee than tea.", english:"Error: He prefer coffee than tea.", options:[{hi:"He",en:"He",correct:false},{hi:"prefer",en:"prefer",correct:false},{hi:"than",en:"than",correct:true},{hi:"tea",en:"tea",correct:false}] },
+  { day:10, subject:"english", qno:8, hindi:"रिक्त: He succeeded ___ hard work.", english:"Fill: He succeeded ___ hard work.", options:[{hi:"by",en:"by",correct:true},{hi:"with",en:"with",correct:false},{hi:"from",en:"from",correct:false},{hi:"at",en:"at",correct:false}] },
+  { day:10, subject:"english", qno:9, hindi:"\"True\" का विलोम?", english:"Antonym of \"True\"", options:[{hi:"Real",en:"Real",correct:false},{hi:"False",en:"False",correct:true},{hi:"Fact",en:"Fact",correct:false},{hi:"Right",en:"Right",correct:false}] },
+  { day:10, subject:"english", qno:10, hindi:"रिक्त: He is ___ LLB.", english:"Fill: He is ___ LLB.", options:[{hi:"a",en:"a",correct:false},{hi:"an",en:"an",correct:true},{hi:"the",en:"the",correct:false},{hi:"none",en:"none",correct:false}] }
+
+  /* ============================================================
+     YAHAN AAGE DAY 2, DAY 3... KE QUESTIONS ADD KARTE JAAO
+     Bas upar wale format mein comma lagakar paste karo.
+     ============================================================ */
+
+];
+
+/* ============================================================
+   RENDERING LOGIC (ise change karne ki zaroorat nahi)
+   ============================================================ */
+
+const subjectNames = {
+  reasoning: "Reasoning",
+  gk: "GK",
+  math: "Mathematics",
+  english: "English/Hindi"
+};
+
+const subjectColors = {
+  reasoning: "#1a5490",
+  gk: "#c0392b",
+  math: "#27ae60",
+  english: "#8e44ad"
+};
+
+function formatQuestion(q) {
+  let text = `Q${q.qno}. ${q.hindi}\n${q.english}\n`;
+  const labels = ["A", "B", "C", "D"];
+  q.options.forEach((opt, i) => {
+    const tick = opt.correct ? " ✓" : "";
+    text += `${labels[i]}) ${opt.hi} / ${opt.en}${tick}\n`;
+  });
+  return text.trim();
+}
+
+function render() {
+  const subject = document.getElementById('subjectFilter').value;
+  const day = document.getElementById('dayFilter').value;
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+
+  const filtered = questions.filter(q => {
+    if (subject !== 'all' && q.subject !== subject) return false;
+    if (day !== 'all' && String(q.day) !== day) return false;
+    return true;
+  });
+
+  document.getElementById('stats').textContent =
+    `Showing ${filtered.length} of ${questions.length} questions`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:#888;">No questions found.</p>';
+    return;
+  }
+
+  filtered.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.style.borderLeftColor = subjectColors[q.subject] || '#1a5490';
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.innerHTML = `
+      <span class="q-tag">Q${q.qno}</span>
+      <span class="subject-tag" style="background:${subjectColors[q.subject]}22;color:${subjectColors[q.subject]};">
+        ${subjectNames[q.subject]} • Day ${q.day}
+      </span>
+    `;
+
+    const ta = document.createElement('textarea');
+    ta.id = `q-${idx}`;
+    ta.value = formatQuestion(q);
+    ta.readOnly = true;
+
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '📋 Copy';
+    btn.onclick = () => {
+      ta.select();
+      document.execCommand('copy');
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copy';
+        btn.classList.remove('copied');
+      }, 1500);
+    };
+
+    card.appendChild(header);
+    card.appendChild(ta);
+    card.appendChild(btn);
+    container.appendChild(card);
+  });
+}
+
+function copyAll() {
+  const subject = document.getElementById('subjectFilter').value;
+  const day = document.getElementById('dayFilter').value;
+  const filtered = questions.filter(q => {
+    if (subject !== 'all' && q.subject !== subject) return false;
+    if (day !== 'all' && String(q.day) !== day) return false;
+    return true;
+  });
+  const all = filtered.map(formatQuestion).join('\n\n---\n\n');
+  navigator.clipboard.writeText(all).then(() => {
+    alert(`✅ ${filtered.length} questions copied to clipboard!`);
+  });
+}
+
+function downloadJSON() {
+  const dataStr = JSON.stringify(questions, null, 2);
+  const blob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ssc-gd-questions.json';
+  a.click();
+}
+
+function populateDays() {
+  const days = [...new Set(questions.map(q => q.day))].sort((a,b)=>a-b);
+  const sel = document.getElementById('dayFilter');
+  days.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = `Day ${d}`;
+    sel.appendChild(opt);
+  });
+}
+
+document.getElementById('subjectFilter').addEventListener('change', render);
+document.getElementById('dayFilter').addEventListener('change', render);
+
+populateDays();
+render();
+</script>
+
+</body>
+</html>
